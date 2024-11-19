@@ -392,7 +392,7 @@ namespace v2rayN.Desktop.Views
             }
             else
             {
-                if (Utils.IsWindows())
+                if (_config.UiItem.Hide2TrayWhenClose)
                 {
                     this.Hide();
                 }

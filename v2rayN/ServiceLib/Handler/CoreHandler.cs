@@ -59,14 +59,16 @@ namespace ServiceLib.Handler
 
             var fileName = Utils.GetConfigPath(Global.CoreConfigFileName);
             var result = await CoreConfigHandler.GenerateClientConfig(node, fileName);
-            ShowMsg(true, result.Msg);
             if (result.Success != true)
             {
+                ShowMsg(true, result.Msg);
                 return;
             }
             else
             {
                 ShowMsg(true, $"{node.GetSummary()}");
+                ShowMsg(false, $"{Environment.OSVersion} - {(Environment.Is64BitOperatingSystem ? 64 : 32)}");
+                ShowMsg(false, string.Format(ResUI.StartService, DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")));
                 await CoreStop();
                 await Task.Delay(100);
                 await CoreStart(node);
@@ -100,6 +102,8 @@ namespace ServiceLib.Handler
             ShowMsg(false, result.Msg);
             if (result.Success)
             {
+                ShowMsg(false, string.Format(ResUI.StartService, DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")));
+                ShowMsg(false, configPath);
                 pid = await CoreStartSpeedtest(configPath, coreType);
             }
             return pid;
@@ -167,9 +171,6 @@ namespace ServiceLib.Handler
 
         private async Task CoreStart(ProfileItem node)
         {
-            ShowMsg(false, $"{Environment.OSVersion} - {(Environment.Is64BitOperatingSystem ? 64 : 32)}");
-            ShowMsg(false, string.Format(ResUI.StartService, DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")));
-
             var coreType = AppHandler.Instance.GetCoreType(node, node.ConfigType);
             _config.RunningCoreType = coreType;
             var coreInfo = CoreInfoHandler.Instance.GetCoreInfo(coreType);
@@ -229,9 +230,6 @@ namespace ServiceLib.Handler
 
         private async Task<int> CoreStartSpeedtest(string configPath, ECoreType coreType)
         {
-            ShowMsg(false, string.Format(ResUI.StartService, DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")));
-
-            ShowMsg(false, configPath);
             try
             {
                 var coreInfo = CoreInfoHandler.Instance.GetCoreInfo(coreType);
@@ -261,7 +259,7 @@ namespace ServiceLib.Handler
             return _config.TunModeItem.EnableTun
                    && eCoreType == ECoreType.sing_box
                    && Utils.IsLinux()
-                   && _config.TunModeItem.LinuxSudoPassword.IsNotEmpty()
+                //&& _config.TunModeItem.LinuxSudoPwd.IsNotEmpty()
                 ;
         }
 
@@ -277,7 +275,6 @@ namespace ServiceLib.Handler
                 return null;
             }
 
-            var isNeedSudo = mayNeedSudo && IsNeedSudo(coreInfo.CoreType);
             try
             {
                 Process proc = new()
@@ -296,12 +293,10 @@ namespace ServiceLib.Handler
                     }
                 };
 
+                var isNeedSudo = mayNeedSudo && IsNeedSudo(coreInfo.CoreType);
                 if (isNeedSudo)
                 {
-                    proc.StartInfo.FileName = $"/bin/sudo";
-                    proc.StartInfo.Arguments = $"-S {fileName} {string.Format(coreInfo.Arguments, configPath)}";
-                    proc.StartInfo.StandardInputEncoding = Encoding.UTF8;
-                    proc.StartInfo.RedirectStandardInput = true;
+                    await RunProcessAsLinuxRoot(proc, fileName, coreInfo, configPath);
                 }
 
                 var startUpErrorMessage = new StringBuilder();
@@ -326,12 +321,13 @@ namespace ServiceLib.Handler
                 }
                 proc.Start();
 
-                if (isNeedSudo)
+                if (isNeedSudo && _config.TunModeItem.LinuxSudoPwd.IsNotEmpty())
                 {
+                    var pwd = DesUtils.Decrypt(_config.TunModeItem.LinuxSudoPwd);
                     await Task.Delay(10);
-                    await proc.StandardInput.WriteLineAsync(_config.TunModeItem.LinuxSudoPassword);
+                    await proc.StandardInput.WriteLineAsync(pwd);
                     await Task.Delay(10);
-                    await proc.StandardInput.WriteLineAsync(_config.TunModeItem.LinuxSudoPassword);
+                    await proc.StandardInput.WriteLineAsync(pwd);
                 }
 
                 if (displayLog)
@@ -359,6 +355,37 @@ namespace ServiceLib.Handler
                 ShowMsg(true, ex.Message);
                 return null;
             }
+        }
+
+        private async Task RunProcessAsLinuxRoot(Process proc, string fileName, CoreInfo coreInfo, string configPath)
+        {
+            var cmdLine = $"{fileName.AppendQuotes()} {string.Format(coreInfo.Arguments, Utils.GetConfigPath(configPath).AppendQuotes())}";
+
+            //Prefer shell scripts
+            var shFilePath = Utils.GetBinPath("run_as_root.sh");
+            File.Delete(shFilePath);
+            var sb = new StringBuilder();
+            sb.AppendLine("#!/bin/sh");
+            sb.AppendLine(cmdLine);
+            await File.WriteAllTextAsync(shFilePath, sb.ToString());
+            await Utils.SetLinuxChmod(shFilePath);
+
+            //Replace command
+            var args = File.Exists(shFilePath) ? shFilePath : cmdLine;
+            if (_config.TunModeItem.LinuxSudoPwd.IsNotEmpty())
+            {
+                proc.StartInfo.FileName = $"/bin/sudo";
+                proc.StartInfo.Arguments = $"-S {args}";
+            }
+            else
+            {
+                proc.StartInfo.FileName = $"/bin/pkexec";
+                proc.StartInfo.Arguments = $"{args}";
+            }
+            proc.StartInfo.WorkingDirectory = null;
+            proc.StartInfo.StandardInputEncoding = Encoding.UTF8;
+            proc.StartInfo.RedirectStandardInput = true;
+            Logging.SaveLog(proc.StartInfo.Arguments);
         }
 
         private async Task KillProcess(Process? proc)
