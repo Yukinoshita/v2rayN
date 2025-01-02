@@ -6,15 +6,13 @@ on:
       release_tag:
         required: false
         type: string
-  push:
-    branches:
-      - master
+  #push:
+  #  branches:
+  #    - master
 
 env:
   OutputArch: "windows-64"
-  OutputArchArm: "windows-arm64"
   OutputPath64:  "${{ github.workspace }}/v2rayN/Release/windows-64"
-  OutputPathArm64:  "${{ github.workspace }}/v2rayN/Release/windows-arm64"
   OutputPath64Sc:  "${{ github.workspace }}/v2rayN/Release/windows-64-SelfContained"
 
 jobs:
@@ -33,10 +31,8 @@ jobs:
       run: |
         cd v2rayN 
         dotnet publish 	./v2rayN/v2rayN.csproj 	-c Release 	-r win-x64 	--self-contained false 	-p:PublishReadyToRun=false 	-p:PublishSingleFile=true -p:EnableWindowsTargeting=true	-o $OutputPath64
-        dotnet publish 	./v2rayN/v2rayN.csproj 	-c Release 	-r win-arm64 	--self-contained false 	-p:PublishReadyToRun=false 	-p:PublishSingleFile=true -p:EnableWindowsTargeting=true	-o $OutputPathArm64
         dotnet publish 	./v2rayN/v2rayN.csproj 	-c Release 	-r win-x64 	--self-contained true 	-p:PublishReadyToRun=false 	-p:PublishSingleFile=true -p:EnableWindowsTargeting=true	-o $OutputPath64Sc
         dotnet publish 	./AmazTool/AmazTool.csproj 	-c Release 	-r win-x64 	--self-contained false 	-p:PublishReadyToRun=false 	-p:PublishSingleFile=true  -p:EnableWindowsTargeting=true	-o $OutputPath64
-        dotnet publish 	./AmazTool/AmazTool.csproj 	-c Release 	-r win-arm64 	--self-contained false 	-p:PublishReadyToRun=false 	-p:PublishSingleFile=true  -p:EnableWindowsTargeting=true	-o $OutputPathArm64
         dotnet publish 	./AmazTool/AmazTool.csproj 	-c Release 	-r win-x64 	--self-contained true 	-p:PublishReadyToRun=false 	-p:PublishSingleFile=true -p:PublishTrimmed=true  -p:EnableWindowsTargeting=true	-o $OutputPath64Sc
 
   
@@ -54,7 +50,6 @@ jobs:
         chmod 755 package-release-zip.sh
         ./package-release-zip.sh $OutputArch $OutputPath64
         ./package-release-zip.sh "windows-64-With-Core" $OutputPath64
-        ./package-release-zip.sh $OutputArchArm $OutputPathArm64
         ./package-release-zip.sh "windows-64-SelfContained" $OutputPath64Sc
         ./package-release-zip.sh "windows-64-SelfContained-With-Core" $OutputPath64Sc
     
