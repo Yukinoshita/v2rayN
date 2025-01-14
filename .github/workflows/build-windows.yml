@@ -12,9 +12,7 @@ on:
 
 env:
   OutputArch: "windows-64"
-  OutputArchArm: "windows-arm64"
   OutputPath64:  "${{ github.workspace }}/v2rayN/Release/windows-64"
-  OutputPathArm64:  "${{ github.workspace }}/v2rayN/Release/windows-arm64"
   OutputPath64Sc:  "${{ github.workspace }}/v2rayN/Release/windows-64-SelfContained"
 
 jobs:
@@ -23,7 +21,7 @@ jobs:
       matrix:
         configuration: [Release]
 
-    runs-on: ubuntu-latest 
+    runs-on: ubuntu-22.04 
 
     steps:
     - name: Checkout

@@ -32,7 +32,6 @@ namespace v2rayN.Desktop.Views
 
             this.KeyDown += MainWindow_KeyDown;
             menuSettingsSetUWP.Click += menuSettingsSetUWP_Click;
-            menuPromotion.Click += menuPromotion_Click;
             menuCheckUpdate.Click += MenuCheckUpdate_Click;
             menuBackupAndRestore.Click += MenuBackupAndRestore_Click;
             menuClose.Click += MenuClose_Click;
@@ -330,11 +329,6 @@ namespace v2rayN.Desktop.Views
                     ViewModel?.Reload();
                 }
             }
-        }
-
-        private void menuPromotion_Click(object? sender, RoutedEventArgs e)
-        {
-            ProcUtils.ProcessStart($"{Utils.Base64Decode(Global.PromotionUrl)}?t={DateTime.Now.Ticks}");
         }
 
         private void menuSettingsSetUWP_Click(object? sender, RoutedEventArgs e)
