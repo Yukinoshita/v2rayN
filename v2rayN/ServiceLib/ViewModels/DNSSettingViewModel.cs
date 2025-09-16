@@ -2,116 +2,165 @@ using System.Reactive;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
-namespace ServiceLib.ViewModels
+namespace ServiceLib.ViewModels;
+
+public class DNSSettingViewModel : MyReactiveObject
 {
-    public class DNSSettingViewModel : MyReactiveObject
+    [Reactive] public bool? UseSystemHosts { get; set; }
+    [Reactive] public bool? AddCommonHosts { get; set; }
+    [Reactive] public bool? FakeIP { get; set; }
+    [Reactive] public bool? BlockBindingQuery { get; set; }
+    [Reactive] public string? DirectDNS { get; set; }
+    [Reactive] public string? RemoteDNS { get; set; }
+    [Reactive] public string? SingboxOutboundsResolveDNS { get; set; }
+    [Reactive] public string? SingboxFinalResolveDNS { get; set; }
+    [Reactive] public string? RayStrategy4Freedom { get; set; }
+    [Reactive] public string? SingboxStrategy4Direct { get; set; }
+    [Reactive] public string? SingboxStrategy4Proxy { get; set; }
+    [Reactive] public string? Hosts { get; set; }
+    [Reactive] public string? DirectExpectedIPs { get; set; }
+
+    [Reactive] public bool UseSystemHostsCompatible { get; set; }
+    [Reactive] public string DomainStrategy4FreedomCompatible { get; set; }
+    [Reactive] public string DomainDNSAddressCompatible { get; set; }
+    [Reactive] public string NormalDNSCompatible { get; set; }
+
+    [Reactive] public string DomainStrategy4Freedom2Compatible { get; set; }
+    [Reactive] public string DomainDNSAddress2Compatible { get; set; }
+    [Reactive] public string NormalDNS2Compatible { get; set; }
+    [Reactive] public string TunDNS2Compatible { get; set; }
+    [Reactive] public bool RayCustomDNSEnableCompatible { get; set; }
+    [Reactive] public bool SBCustomDNSEnableCompatible { get; set; }
+
+    public ReactiveCommand<Unit, Unit> SaveCmd { get; }
+    public ReactiveCommand<Unit, Unit> ImportDefConfig4V2rayCompatibleCmd { get; }
+    public ReactiveCommand<Unit, Unit> ImportDefConfig4SingboxCompatibleCmd { get; }
+
+    public DNSSettingViewModel(Func<EViewAction, object?, Task<bool>>? updateView)
     {
-        [Reactive] public bool UseSystemHosts { get; set; }
-        [Reactive] public string DomainStrategy4Freedom { get; set; }
-        [Reactive] public string DomainDNSAddress { get; set; }
-        [Reactive] public string NormalDNS { get; set; }
+        _config = AppManager.Instance.Config;
+        _updateView = updateView;
+        SaveCmd = ReactiveCommand.CreateFromTask(SaveSettingAsync);
 
-        [Reactive] public string DomainStrategy4Freedom2 { get; set; }
-        [Reactive] public string DomainDNSAddress2 { get; set; }
-        [Reactive] public string NormalDNS2 { get; set; }
-        [Reactive] public string TunDNS2 { get; set; }
-
-        public ReactiveCommand<Unit, Unit> SaveCmd { get; }
-        public ReactiveCommand<Unit, Unit> ImportDefConfig4V2rayCmd { get; }
-        public ReactiveCommand<Unit, Unit> ImportDefConfig4SingboxCmd { get; }
-
-        public DNSSettingViewModel(Func<EViewAction, object?, Task<bool>>? updateView)
+        ImportDefConfig4V2rayCompatibleCmd = ReactiveCommand.CreateFromTask(async () =>
         {
-            _config = AppHandler.Instance.Config;
-            _updateView = updateView;
-            SaveCmd = ReactiveCommand.CreateFromTask(async () =>
-            {
-                await SaveSettingAsync();
-            });
+            NormalDNSCompatible = EmbedUtils.GetEmbedText(Global.DNSV2rayNormalFileName);
+            await Task.CompletedTask;
+        });
 
-            ImportDefConfig4V2rayCmd = ReactiveCommand.CreateFromTask(async () =>
-            {
-                NormalDNS = EmbedUtils.GetEmbedText(Global.DNSV2rayNormalFileName);
-                await Task.CompletedTask;
-            });
-
-            ImportDefConfig4SingboxCmd = ReactiveCommand.CreateFromTask(async () =>
-            {
-                NormalDNS2 = EmbedUtils.GetEmbedText(Global.DNSSingboxNormalFileName);
-                TunDNS2 = EmbedUtils.GetEmbedText(Global.TunSingboxDNSFileName);
-                await Task.CompletedTask;
-            });
-
-            _ = Init();
-        }
-
-        private async Task Init()
+        ImportDefConfig4SingboxCompatibleCmd = ReactiveCommand.CreateFromTask(async () =>
         {
-            var item = await AppHandler.Instance.GetDNSItem(ECoreType.Xray);
-            UseSystemHosts = item.UseSystemHosts;
-            DomainStrategy4Freedom = item?.DomainStrategy4Freedom ?? string.Empty;
-            DomainDNSAddress = item?.DomainDNSAddress ?? string.Empty;
-            NormalDNS = item?.NormalDNS ?? string.Empty;
+            NormalDNS2Compatible = EmbedUtils.GetEmbedText(Global.DNSSingboxNormalFileName);
+            TunDNS2Compatible = EmbedUtils.GetEmbedText(Global.TunSingboxDNSFileName);
+            await Task.CompletedTask;
+        });
 
-            var item2 = await AppHandler.Instance.GetDNSItem(ECoreType.sing_box);
-            DomainStrategy4Freedom2 = item2?.DomainStrategy4Freedom ?? string.Empty;
-            DomainDNSAddress2 = item2?.DomainDNSAddress ?? string.Empty;
-            NormalDNS2 = item2?.NormalDNS ?? string.Empty;
-            TunDNS2 = item2?.TunDNS ?? string.Empty;
-        }
+        _ = Init();
+    }
 
-        private async Task SaveSettingAsync()
+    private async Task Init()
+    {
+        _config = AppManager.Instance.Config;
+        var item = _config.SimpleDNSItem;
+        UseSystemHosts = item.UseSystemHosts;
+        AddCommonHosts = item.AddCommonHosts;
+        FakeIP = item.FakeIP;
+        BlockBindingQuery = item.BlockBindingQuery;
+        DirectDNS = item.DirectDNS;
+        RemoteDNS = item.RemoteDNS;
+        RayStrategy4Freedom = item.RayStrategy4Freedom;
+        SingboxOutboundsResolveDNS = item.SingboxOutboundsResolveDNS;
+        SingboxFinalResolveDNS = item.SingboxFinalResolveDNS;
+        SingboxStrategy4Direct = item.SingboxStrategy4Direct;
+        SingboxStrategy4Proxy = item.SingboxStrategy4Proxy;
+        Hosts = item.Hosts;
+        DirectExpectedIPs = item.DirectExpectedIPs;
+
+        var item1 = await AppManager.Instance.GetDNSItem(ECoreType.Xray);
+        RayCustomDNSEnableCompatible = item1.Enabled;
+        UseSystemHostsCompatible = item1.UseSystemHosts;
+        DomainStrategy4FreedomCompatible = item1?.DomainStrategy4Freedom ?? string.Empty;
+        DomainDNSAddressCompatible = item1?.DomainDNSAddress ?? string.Empty;
+        NormalDNSCompatible = item1?.NormalDNS ?? string.Empty;
+
+        var item2 = await AppManager.Instance.GetDNSItem(ECoreType.sing_box);
+        SBCustomDNSEnableCompatible = item2.Enabled;
+        DomainStrategy4Freedom2Compatible = item2?.DomainStrategy4Freedom ?? string.Empty;
+        DomainDNSAddress2Compatible = item2?.DomainDNSAddress ?? string.Empty;
+        NormalDNS2Compatible = item2?.NormalDNS ?? string.Empty;
+        TunDNS2Compatible = item2?.TunDNS ?? string.Empty;
+    }
+
+    private async Task SaveSettingAsync()
+    {
+        _config.SimpleDNSItem.UseSystemHosts = UseSystemHosts;
+        _config.SimpleDNSItem.AddCommonHosts = AddCommonHosts;
+        _config.SimpleDNSItem.FakeIP = FakeIP;
+        _config.SimpleDNSItem.BlockBindingQuery = BlockBindingQuery;
+        _config.SimpleDNSItem.DirectDNS = DirectDNS;
+        _config.SimpleDNSItem.RemoteDNS = RemoteDNS;
+        _config.SimpleDNSItem.RayStrategy4Freedom = RayStrategy4Freedom;
+        _config.SimpleDNSItem.SingboxOutboundsResolveDNS = SingboxOutboundsResolveDNS;
+        _config.SimpleDNSItem.SingboxFinalResolveDNS = SingboxFinalResolveDNS;
+        _config.SimpleDNSItem.SingboxStrategy4Direct = SingboxStrategy4Direct;
+        _config.SimpleDNSItem.SingboxStrategy4Proxy = SingboxStrategy4Proxy;
+        _config.SimpleDNSItem.Hosts = Hosts;
+        _config.SimpleDNSItem.DirectExpectedIPs = DirectExpectedIPs;
+
+        if (NormalDNSCompatible.IsNotEmpty())
         {
-            if (NormalDNS.IsNotEmpty())
+            var obj = JsonUtils.ParseJson(NormalDNSCompatible);
+            if (obj != null && obj["servers"] != null)
             {
-                var obj = JsonUtils.ParseJson(NormalDNS);
-                if (obj != null && obj["servers"] != null)
-                {
-                }
-                else
-                {
-                    if (NormalDNS.Contains('{') || NormalDNS.Contains('}'))
-                    {
-                        NoticeHandler.Instance.Enqueue(ResUI.FillCorrectDNSText);
-                        return;
-                    }
-                }
             }
-            if (NormalDNS2.IsNotEmpty())
+            else
             {
-                var obj2 = JsonUtils.Deserialize<Dns4Sbox>(NormalDNS2);
-                if (obj2 == null)
+                if (NormalDNSCompatible.Contains('{') || NormalDNSCompatible.Contains('}'))
                 {
-                    NoticeHandler.Instance.Enqueue(ResUI.FillCorrectDNSText);
+                    NoticeManager.Instance.Enqueue(ResUI.FillCorrectDNSText);
                     return;
                 }
             }
-            if (TunDNS2.IsNotEmpty())
+        }
+        if (NormalDNS2Compatible.IsNotEmpty())
+        {
+            var obj2 = JsonUtils.Deserialize<Dns4Sbox>(NormalDNS2Compatible);
+            if (obj2 == null)
             {
-                var obj2 = JsonUtils.Deserialize<Dns4Sbox>(TunDNS2);
-                if (obj2 == null)
-                {
-                    NoticeHandler.Instance.Enqueue(ResUI.FillCorrectDNSText);
-                    return;
-                }
+                NoticeManager.Instance.Enqueue(ResUI.FillCorrectDNSText);
+                return;
             }
+        }
+        if (TunDNS2Compatible.IsNotEmpty())
+        {
+            var obj2 = JsonUtils.Deserialize<Dns4Sbox>(TunDNS2Compatible);
+            if (obj2 == null)
+            {
+                NoticeManager.Instance.Enqueue(ResUI.FillCorrectDNSText);
+                return;
+            }
+        }
 
-            var item = await AppHandler.Instance.GetDNSItem(ECoreType.Xray);
-            item.DomainStrategy4Freedom = DomainStrategy4Freedom;
-            item.DomainDNSAddress = DomainDNSAddress;
-            item.UseSystemHosts = UseSystemHosts;
-            item.NormalDNS = NormalDNS;
-            await ConfigHandler.SaveDNSItems(_config, item);
+        var item1 = await AppManager.Instance.GetDNSItem(ECoreType.Xray);
+        item1.Enabled = RayCustomDNSEnableCompatible;
+        item1.DomainStrategy4Freedom = DomainStrategy4FreedomCompatible;
+        item1.DomainDNSAddress = DomainDNSAddressCompatible;
+        item1.UseSystemHosts = UseSystemHostsCompatible;
+        item1.NormalDNS = NormalDNSCompatible;
+        await ConfigHandler.SaveDNSItems(_config, item1);
 
-            var item2 = await AppHandler.Instance.GetDNSItem(ECoreType.sing_box);
-            item2.DomainStrategy4Freedom = DomainStrategy4Freedom2;
-            item2.DomainDNSAddress = DomainDNSAddress2;
-            item2.NormalDNS = JsonUtils.Serialize(JsonUtils.ParseJson(NormalDNS2));
-            item2.TunDNS = JsonUtils.Serialize(JsonUtils.ParseJson(TunDNS2));
-            await ConfigHandler.SaveDNSItems(_config, item2);
+        var item2 = await AppManager.Instance.GetDNSItem(ECoreType.sing_box);
+        item2.Enabled = SBCustomDNSEnableCompatible;
+        item2.DomainStrategy4Freedom = DomainStrategy4Freedom2Compatible;
+        item2.DomainDNSAddress = DomainDNSAddress2Compatible;
+        item2.NormalDNS = JsonUtils.Serialize(JsonUtils.ParseJson(NormalDNS2Compatible));
+        item2.TunDNS = JsonUtils.Serialize(JsonUtils.ParseJson(TunDNS2Compatible));
+        await ConfigHandler.SaveDNSItems(_config, item2);
 
-            NoticeHandler.Instance.Enqueue(ResUI.OperationSuccess);
-            _ = _updateView?.Invoke(EViewAction.CloseWindow, null);
+        await ConfigHandler.SaveConfig(_config);
+        if (_updateView != null)
+        {
+            await _updateView(EViewAction.CloseWindow, null);
         }
     }
 }

@@ -11,11 +11,6 @@ public partial class App : Application
 {
     public override void Initialize()
     {
-        if (!AppHandler.Instance.InitApp())
-        {
-            Environment.Exit(0);
-            return;
-        }
         AvaloniaXamlLoader.Load(this);
 
         AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
@@ -30,7 +25,7 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            AppHandler.Instance.InitComponents();
+            AppManager.Instance.InitComponents();
 
             desktop.Exit += OnExit;
             desktop.MainWindow = new MainWindow();
@@ -43,7 +38,7 @@ public partial class App : Application
     {
         if (e.ExceptionObject != null)
         {
-            Logging.SaveLog("CurrentDomain_UnhandledException", (Exception)e.ExceptionObject!);
+            Logging.SaveLog("CurrentDomain_UnhandledException", (Exception)e.ExceptionObject);
         }
     }
 
@@ -78,11 +73,7 @@ public partial class App : Application
 
     private async void MenuExit_Click(object? sender, EventArgs e)
     {
-        var service = Locator.Current.GetService<MainWindowViewModel>();
-        if (service != null)
-        {
-            await service.MyAppExitAsync(true);
-        }
-        service?.Shutdown(true);
+        await AppManager.Instance.AppExitAsync(false);
+        AppManager.Instance.Shutdown(true);
     }
 }
