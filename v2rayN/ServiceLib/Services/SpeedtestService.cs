@@ -1,8 +1,3 @@
-using System.Collections.Concurrent;
-using System.Diagnostics;
-using System.Net;
-using System.Net.Sockets;
-
 namespace ServiceLib.Services;
 
 public class SpeedtestService(Config config, Func<SpeedTestResult, Task> updateFunc)
@@ -24,12 +19,17 @@ public class SpeedtestService(Config config, Func<SpeedTestResult, Task> updateF
 
     public void ExitLoop()
     {
-        if (_lstExitLoop.Count > 0)
+        if (!_lstExitLoop.IsEmpty)
         {
-            UpdateFunc("", ResUI.SpeedtestingStop);
+            _ = UpdateFunc("", ResUI.SpeedtestingStop);
 
             _lstExitLoop.Clear();
         }
+    }
+
+    private static bool ShouldStopTest(string exitLoopKey)
+    {
+        return !_lstExitLoop.Any(p => p == exitLoopKey);
     }
 
     private async Task RunAsync(ESpeedActionType actionType, List<ProfileItem> selecteds)
@@ -64,7 +64,7 @@ public class SpeedtestService(Config config, Func<SpeedTestResult, Task> updateF
         var lstSelected = new List<ServerTestItem>();
         foreach (var it in selecteds)
         {
-            if (it.ConfigType == EConfigType.Custom)
+            if (it.ConfigType.IsComplexType())
             {
                 continue;
             }
@@ -108,6 +108,11 @@ public class SpeedtestService(Config config, Func<SpeedTestResult, Task> updateF
             }
         }
 
+        if (lstSelected.Count > 1 && (actionType == ESpeedActionType.Speedtest || actionType == ESpeedActionType.Mixedtest))
+        {
+            NoticeManager.Instance.Enqueue(ResUI.SpeedtestingPressEscToExit);
+        }
+
         return lstSelected;
     }
 
@@ -116,10 +121,6 @@ public class SpeedtestService(Config config, Func<SpeedTestResult, Task> updateF
         List<Task> tasks = [];
         foreach (var it in selecteds)
         {
-            if (it.ConfigType == EConfigType.Custom)
-            {
-                continue;
-            }
             tasks.Add(Task.Run(async () =>
             {
                 try
@@ -161,7 +162,7 @@ public class SpeedtestService(Config config, Func<SpeedTestResult, Task> updateF
         var pageSizeNext = pageSize / 2;
         if (lstFailed.Count > 0 && pageSizeNext > 0)
         {
-            if (_lstExitLoop.Any(p => p == exitLoopKey) == false)
+            if (ShouldStopTest(exitLoopKey))
             {
                 await UpdateFunc("", ResUI.SpeedtestingSkip);
                 return;
@@ -182,11 +183,11 @@ public class SpeedtestService(Config config, Func<SpeedTestResult, Task> updateF
 
     private async Task<bool> RunRealPingAsync(List<ServerTestItem> selecteds, string exitLoopKey)
     {
-        var pid = -1;
+        ProcessService processService = null;
         try
         {
-            pid = await CoreManager.Instance.LoadCoreConfigSpeedtest(selecteds);
-            if (pid < 0)
+            processService = await CoreManager.Instance.LoadCoreConfigSpeedtest(selecteds);
+            if (processService is null)
             {
                 return false;
             }
@@ -199,10 +200,12 @@ public class SpeedtestService(Config config, Func<SpeedTestResult, Task> updateF
                 {
                     continue;
                 }
-                if (it.ConfigType == EConfigType.Custom)
+
+                if (ShouldStopTest(exitLoopKey))
                 {
-                    continue;
+                    return false;
                 }
+
                 tasks.Add(Task.Run(async () =>
                 {
                     await DoRealPing(it);
@@ -216,9 +219,9 @@ public class SpeedtestService(Config config, Func<SpeedTestResult, Task> updateF
         }
         finally
         {
-            if (pid > 0)
+            if (processService != null)
             {
-                await ProcUtils.ProcessKill(pid);
+                await processService?.StopAsync();
             }
         }
         return true;
@@ -231,41 +234,43 @@ public class SpeedtestService(Config config, Func<SpeedTestResult, Task> updateF
         List<Task> tasks = new();
         foreach (var it in selecteds)
         {
-            if (_lstExitLoop.Any(p => p == exitLoopKey) == false)
+            if (ShouldStopTest(exitLoopKey))
             {
                 await UpdateFunc(it.IndexId, "", ResUI.SpeedtestingSkip);
-                continue;
-            }
-            if (it.ConfigType == EConfigType.Custom)
-            {
                 continue;
             }
             await concurrencySemaphore.WaitAsync();
 
             tasks.Add(Task.Run(async () =>
             {
-                var pid = -1;
+                ProcessService processService = null;
                 try
                 {
-                    pid = await CoreManager.Instance.LoadCoreConfigSpeedtest(it);
-                    if (pid < 0)
+                    processService = await CoreManager.Instance.LoadCoreConfigSpeedtest(it);
+                    if (processService is null)
                     {
                         await UpdateFunc(it.IndexId, "", ResUI.FailedToRunCore);
+                        return;
                     }
-                    else
+
+                    await Task.Delay(1000);
+
+                    var delay = await DoRealPing(it);
+                    if (blSpeedTest)
                     {
-                        await Task.Delay(1000);
-                        var delay = await DoRealPing(it);
-                        if (blSpeedTest)
+                        if (ShouldStopTest(exitLoopKey))
                         {
-                            if (delay > 0)
-                            {
-                                await DoSpeedTest(downloadHandle, it);
-                            }
-                            else
-                            {
-                                await UpdateFunc(it.IndexId, "", ResUI.SpeedtestingSkip);
-                            }
+                            await UpdateFunc(it.IndexId, "", ResUI.SpeedtestingSkip);
+                            return;
+                        }
+
+                        if (delay > 0)
+                        {
+                            await DoSpeedTest(downloadHandle, it);
+                        }
+                        else
+                        {
+                            await UpdateFunc(it.IndexId, "", ResUI.SpeedtestingSkip);
                         }
                     }
                 }
@@ -275,9 +280,9 @@ public class SpeedtestService(Config config, Func<SpeedTestResult, Task> updateF
                 }
                 finally
                 {
-                    if (pid > 0)
+                    if (processService != null)
                     {
-                        await ProcUtils.ProcessKill(pid);
+                        await processService?.StopAsync();
                     }
                     concurrencySemaphore.Release();
                 }
@@ -289,7 +294,7 @@ public class SpeedtestService(Config config, Func<SpeedTestResult, Task> updateF
     private async Task<int> DoRealPing(ServerTestItem it)
     {
         var webProxy = new WebProxy($"socks5://{Global.Loopback}:{it.Port}");
-        var responseTime = await HttpClientHelper.Instance.GetRealPingTime(_config.SpeedTestItem.SpeedPingTestUrl, webProxy, 10);
+        var responseTime = await ConnectionHandler.GetRealPingTime(_config.SpeedTestItem.SpeedPingTestUrl, webProxy, 10);
 
         ProfileExManager.Instance.SetTestDelay(it.IndexId, responseTime);
         await UpdateFunc(it.IndexId, responseTime.ToString());
@@ -318,31 +323,28 @@ public class SpeedtestService(Config config, Func<SpeedTestResult, Task> updateF
     {
         var responseTime = -1;
 
+        if (!IPAddress.TryParse(url, out var ipAddress))
+        {
+            var ipHostInfo = await Dns.GetHostEntryAsync(url);
+            ipAddress = ipHostInfo.AddressList.First();
+        }
+
+        IPEndPoint endPoint = new(ipAddress, port);
+        using Socket clientSocket = new(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+
+        var timer = Stopwatch.StartNew();
         try
         {
-            if (!IPAddress.TryParse(url, out var ipAddress))
-            {
-                var ipHostInfo = await Dns.GetHostEntryAsync(url);
-                ipAddress = ipHostInfo.AddressList.First();
-            }
-
-            IPEndPoint endPoint = new(ipAddress, port);
-            using Socket clientSocket = new(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-
-            var timer = Stopwatch.StartNew();
-            var result = clientSocket.BeginConnect(endPoint, null, null);
-            if (!result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(5)))
-            {
-                throw new TimeoutException("connect timeout (5s): " + url);
-            }
-            timer.Stop();
-            responseTime = (int)timer.Elapsed.TotalMilliseconds;
-
-            clientSocket.EndConnect(result);
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            await clientSocket.ConnectAsync(endPoint, cts.Token).ConfigureAwait(false);
+            responseTime = (int)timer.ElapsedMilliseconds;
         }
-        catch (Exception ex)
+        catch (OperationCanceledException)
         {
-            Logging.SaveLog(_tag, ex);
+        }
+        finally
+        {
+            timer.Stop();
         }
         return responseTime;
     }
@@ -351,7 +353,7 @@ public class SpeedtestService(Config config, Func<SpeedTestResult, Task> updateF
     {
         List<List<ServerTestItem>> lstTest = new();
         var lst1 = lstSelected.Where(t => Global.XraySupportConfigType.Contains(t.ConfigType)).ToList();
-        var lst2 = lstSelected.Where(t => Global.SingboxSupportConfigType.Contains(t.ConfigType) && !Global.XraySupportConfigType.Contains(t.ConfigType)).ToList();
+        var lst2 = lstSelected.Where(t => Global.SingboxOnlyConfigType.Contains(t.ConfigType)).ToList();
 
         for (var num = 0; num < (int)Math.Ceiling(lst1.Count * 1.0 / pageSize); num++)
         {

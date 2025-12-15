@@ -11,8 +11,8 @@
     xmlns:view="clr-namespace:v2rayN.Views"
     xmlns:vms="clr-namespace:ServiceLib.ViewModels;assembly=ServiceLib"
     Title="v2rayN"
-    Width="900"
-    Height="700"
+    Width="1200"
+    Height="800"
     MinWidth="900"
     x:TypeArguments="vms:MainWindowViewModel"
     Icon="/Resources/v2rayN.ico"
@@ -32,6 +32,7 @@
 
     <materialDesign:DialogHost
         materialDesign:TransitionAssist.DisableTransitions="True"
+        CloseOnClickAway="True"
         Identifier="RootDialog"
         SnackbarMessageQueue="{Binding ElementName=MainSnackbar, Path=MessageQueue}"
         Style="{StaticResource MaterialDesignEmbeddedDialogHost}">
@@ -45,7 +46,7 @@
                         KeyboardNavigation.TabNavigation="Continue"
                         Style="{StaticResource MaterialDesignToolBar}">
                         <Menu Margin="0,1" Style="{StaticResource ToolbarMenu}">
-                            <MenuItem Padding="8,0" AutomationProperties.Name="{x:Static resx:ResUI.menuServers}">
+                            <MenuItem Padding="{StaticResource MarginLeftRight8}" AutomationProperties.Name="{x:Static resx:ResUI.menuServers}">
                                 <MenuItem.Header>
                                     <StackPanel Orientation="Horizontal">
                                         <materialDesign:PackIcon
@@ -58,11 +59,13 @@
                                 <MenuItem
                                     x:Name="menuAddServerViaClipboard"
                                     Height="{StaticResource MenuItemHeight}"
-                                    Header="{x:Static resx:ResUI.menuAddServerViaClipboard}" />
+                                    Header="{x:Static resx:ResUI.menuAddServerViaClipboard}"
+                                    InputGestureText="Ctrl+V" />
                                 <MenuItem
                                     x:Name="menuAddServerViaScan"
                                     Height="{StaticResource MenuItemHeight}"
-                                    Header="{x:Static resx:ResUI.menuAddServerViaScan}" />
+                                    Header="{x:Static resx:ResUI.menuAddServerViaScan}"
+                                    InputGestureText="Ctrl+S" />
                                 <MenuItem
                                     x:Name="menuAddServerViaImage"
                                     Height="{StaticResource MenuItemHeight}"
@@ -71,6 +74,14 @@
                                     x:Name="menuAddCustomServer"
                                     Height="{StaticResource MenuItemHeight}"
                                     Header="{x:Static resx:ResUI.menuAddCustomServer}" />
+                                <MenuItem
+                                    x:Name="menuAddPolicyGroupServer"
+                                    Height="{StaticResource MenuItemHeight}"
+                                    Header="{x:Static resx:ResUI.menuAddPolicyGroupServer}" />
+                                <MenuItem
+                                    x:Name="menuAddProxyChainServer"
+                                    Height="{StaticResource MenuItemHeight}"
+                                    Header="{x:Static resx:ResUI.menuAddProxyChainServer}" />
                                 <Separator Margin="-40,5" />
                                 <MenuItem
                                     x:Name="menuAddVmessServer"
@@ -117,7 +128,7 @@
                         </Menu>
                         <Separator />
                         <Menu Margin="0,1" Style="{StaticResource ToolbarMenu}">
-                            <MenuItem Padding="8,0" AutomationProperties.Name="{x:Static resx:ResUI.menuSubscription}">
+                            <MenuItem Padding="{StaticResource MarginLeftRight8}" AutomationProperties.Name="{x:Static resx:ResUI.menuSubscription}">
                                 <MenuItem.Header>
                                     <StackPanel Orientation="Horizontal">
                                         <materialDesign:PackIcon
@@ -152,7 +163,7 @@
                         </Menu>
                         <Separator />
                         <Menu Margin="0,1" Style="{StaticResource ToolbarMenu}">
-                            <MenuItem Padding="8,0" AutomationProperties.Name="{x:Static resx:ResUI.menuSetting}">
+                            <MenuItem Padding="{StaticResource MarginLeftRight8}" AutomationProperties.Name="{x:Static resx:ResUI.menuSetting}">
                                 <MenuItem.Header>
                                     <StackPanel Orientation="Horizontal">
                                         <materialDesign:PackIcon
@@ -223,8 +234,27 @@
                         <Separator />
                         <Menu Margin="0,1" Style="{StaticResource ToolbarMenu}">
                             <MenuItem
+                                x:Name="menuHelp"
+                                Padding="{StaticResource MarginLeftRight8}"
+                                AutomationProperties.Name="{x:Static resx:ResUI.menuHelp}">
+                                <MenuItem.Header>
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon
+                                            Margin="{StaticResource MarginRight8}"
+                                            VerticalAlignment="Center"
+                                            Kind="HelpCircleOutline" />
+                                        <TextBlock Text="{x:Static resx:ResUI.menuHelp}" />
+                                    </StackPanel>
+                                </MenuItem.Header>
+                                <MenuItem x:Name="menuCheckUpdate" Header="{x:Static resx:ResUI.menuCheckUpdate}" />
+                                <Separator Margin="-40,5" />
+                            </MenuItem>
+                        </Menu>
+                        <Separator />
+                        <Menu Margin="0,1" Style="{StaticResource ToolbarMenu}">
+                            <MenuItem
                                 x:Name="menuReload"
-                                Padding="8,0"
+                                Padding="{StaticResource MarginLeftRight8}"
                                 AutomationProperties.Name="{x:Static resx:ResUI.menuReload}">
                                 <MenuItem.Header>
                                     <StackPanel Orientation="Horizontal">
@@ -240,42 +270,8 @@
                         <Separator />
                         <Menu Margin="0,1" Style="{StaticResource ToolbarMenu}">
                             <MenuItem
-                                Name="menuCheckUpdate"
-                                Padding="8,0"
-                                AutomationProperties.Name="{x:Static resx:ResUI.menuCheckUpdate}">
-                                <MenuItem.Header>
-                                    <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon
-                                            Margin="{StaticResource MarginRight8}"
-                                            VerticalAlignment="Center"
-                                            Kind="Update" />
-                                        <TextBlock Text="{x:Static resx:ResUI.menuCheckUpdate}" />
-                                    </StackPanel>
-                                </MenuItem.Header>
-                            </MenuItem>
-                        </Menu>
-                        <Separator />
-                        <Menu Margin="0,1" Style="{StaticResource ToolbarMenu}">
-                            <MenuItem
-                                x:Name="menuHelp"
-                                Padding="8,0"
-                                AutomationProperties.Name="{x:Static resx:ResUI.menuHelp}">
-                                <MenuItem.Header>
-                                    <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon
-                                            Margin="{StaticResource MarginRight8}"
-                                            VerticalAlignment="Center"
-                                            Kind="HelpCircleOutline" />
-                                        <TextBlock Text="{x:Static resx:ResUI.menuHelp}" />
-                                    </StackPanel>
-                                </MenuItem.Header>
-                            </MenuItem>
-                        </Menu>
-                        <Separator />
-                        <Menu Margin="0,1" Style="{StaticResource ToolbarMenu}">
-                            <MenuItem
                                 x:Name="menuPromotion"
-                                Padding="8,0"
+                                Padding="{StaticResource MarginLeftRight8}"
                                 AutomationProperties.Name="{x:Static resx:ResUI.menuPromotion}">
                                 <MenuItem.Header>
                                     <StackPanel Orientation="Horizontal">
@@ -292,7 +288,7 @@
                         <Menu Margin="0,1" Style="{StaticResource ToolbarMenu}">
                             <MenuItem
                                 x:Name="menuClose"
-                                Padding="8,0"
+                                Padding="{StaticResource MarginLeftRight8}"
                                 AutomationProperties.Name="{x:Static resx:ResUI.menuClose}">
                                 <MenuItem.Header>
                                     <StackPanel Orientation="Horizontal">

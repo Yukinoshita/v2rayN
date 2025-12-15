@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace ServiceLib.Models;
 
 public class SingboxConfig
@@ -145,6 +143,7 @@ public class Outbound4Sbox : BaseServer4Sbox
     public string? plugin_opts { get; set; }
     public List<string>? outbounds { get; set; }
     public bool? interrupt_exist_connections { get; set; }
+    public int? tolerance { get; set; }
 }
 
 public class Endpoints4Sbox : BaseServer4Sbox
@@ -182,6 +181,7 @@ public class Tls4Sbox
     public bool? fragment { get; set; }
     public string? fragment_fallback_delay { get; set; }
     public bool? record_fragment { get; set; }
+    public List<string>? certificate { get; set; }
 }
 
 public class Multiplex4Sbox
@@ -216,6 +216,8 @@ public class Transport4Sbox
     public string? idle_timeout { get; set; }
     public string? ping_timeout { get; set; }
     public bool? permit_without_stream { get; set; }
+    public int? max_early_data { get; set; }
+    public string? early_data_header_name { get; set; }
 }
 
 public class Headers4Sbox

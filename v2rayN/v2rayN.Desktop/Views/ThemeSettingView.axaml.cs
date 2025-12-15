@@ -1,7 +1,3 @@
-using System.Reactive.Disposables;
-using Avalonia;
-using Avalonia.ReactiveUI;
-using ReactiveUI;
 using v2rayN.Desktop.ViewModels;
 
 namespace v2rayN.Desktop.Views;
@@ -17,7 +13,7 @@ public partial class ThemeSettingView : ReactiveUserControl<ThemeSettingViewMode
         ViewModel = new ThemeSettingViewModel();
 
         cmbCurrentTheme.ItemsSource = Utils.GetEnumNames<ETheme>();
-        cmbCurrentFontSize.ItemsSource = Enumerable.Range(Global.MinFontSize, 11).ToList();
+        cmbCurrentFontSize.ItemsSource = Enumerable.Range(Global.MinFontSize, Global.MinFontSizeCount).ToList();
         cmbCurrentLanguage.ItemsSource = Global.Languages;
 
         this.WhenActivated(disposables =>

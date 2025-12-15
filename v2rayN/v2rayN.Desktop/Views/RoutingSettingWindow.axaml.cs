@@ -1,9 +1,3 @@
-using System.Reactive.Disposables;
-using Avalonia.Controls;
-using Avalonia.Input;
-using Avalonia.Interactivity;
-using MsBox.Avalonia.Enums;
-using ReactiveUI;
 using v2rayN.Desktop.Base;
 using v2rayN.Desktop.Common;
 
@@ -18,9 +12,9 @@ public partial class RoutingSettingWindow : WindowBase<RoutingSettingViewModel>
         InitializeComponent();
 
         Loaded += Window_Loaded;
-        this.Closing += RoutingSettingWindow_Closing;
-        btnCancel.Click += (s, e) => this.Close();
-        this.KeyDown += RoutingSettingWindow_KeyDown;
+        Closing += RoutingSettingWindow_Closing;
+        btnCancel.Click += (s, e) => Close();
+        KeyDown += RoutingSettingWindow_KeyDown;
         lstRoutings.SelectionChanged += lstRoutings_SelectionChanged;
         lstRoutings.DoubleTapped += LstRoutings_DoubleTapped;
         menuRoutingAdvancedSelectAll.Click += menuRoutingAdvancedSelectAll_Click;
@@ -54,7 +48,7 @@ public partial class RoutingSettingWindow : WindowBase<RoutingSettingViewModel>
         switch (action)
         {
             case EViewAction.CloseWindow:
-                this.Close(true);
+                Close(true);
                 break;
 
             case EViewAction.ShowYesNo:
@@ -66,7 +60,10 @@ public partial class RoutingSettingWindow : WindowBase<RoutingSettingViewModel>
 
             case EViewAction.RoutingRuleSettingWindow:
                 if (obj is null)
+                {
                     return false;
+                }
+
                 return await new RoutingRuleSettingWindow((RoutingItem)obj).ShowDialog<bool>(this);
         }
         return await Task.FromResult(true);
@@ -76,18 +73,27 @@ public partial class RoutingSettingWindow : WindowBase<RoutingSettingViewModel>
     {
         if (e.KeyModifiers is KeyModifiers.Control or KeyModifiers.Meta)
         {
-            if (e.Key == Key.A)
+            switch (e.Key)
             {
-                lstRoutings.SelectAll();
+                case Key.A:
+                    lstRoutings.SelectAll();
+                    break;
             }
         }
-        else if (e.Key is Key.Enter or Key.Return)
+        else
         {
-            ViewModel?.RoutingAdvancedSetDefault();
-        }
-        else if (e.Key == Key.Delete)
-        {
-            ViewModel?.RoutingAdvancedRemoveAsync();
+            switch (e.Key)
+            {
+                case Key.Enter:
+                    //case Key.Return:
+                    ViewModel?.RoutingAdvancedSetDefault();
+                    break;
+
+                case Key.Delete:
+                case Key.Back:
+                    ViewModel?.RoutingAdvancedRemoveAsync();
+                    break;
+            }
         }
     }
 
@@ -122,7 +128,7 @@ public partial class RoutingSettingWindow : WindowBase<RoutingSettingViewModel>
     private void btnCancel_Click(object? sender, RoutedEventArgs e)
     {
         _manualClose = true;
-        this.Close(ViewModel?.IsModified);
+        Close(ViewModel?.IsModified);
     }
 
     private void RoutingSettingWindow_Closing(object? sender, WindowClosingEventArgs e)

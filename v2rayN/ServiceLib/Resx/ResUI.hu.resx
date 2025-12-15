@@ -472,10 +472,10 @@
     <value>Nyelv (Újraindítás)</value>
   </data>
   <data name="menuAddServerViaClipboard" xml:space="preserve">
-    <value>Megosztási linkek importálása vágólapról (Ctrl+V)</value>
+    <value>Megosztási linkek importálása vágólapról</value>
   </data>
   <data name="menuAddServerViaScan" xml:space="preserve">
-    <value>QR kód beolvasása a képernyőről (Ctrl+S)</value>
+    <value>QR kód beolvasása a képernyőről</value>
   </data>
   <data name="menuCopyServer" xml:space="preserve">
     <value>Kijelölt konfiguráció klónozása</value>
@@ -484,31 +484,31 @@
     <value>Ismétlődő konfigurációk eltávolítása</value>
   </data>
   <data name="menuRemoveServer" xml:space="preserve">
-    <value>Kijelölt konfigurációk eltávolítása (Delete)</value>
+    <value>Kijelölt konfigurációk eltávolítása</value>
   </data>
   <data name="menuSetDefaultServer" xml:space="preserve">
-    <value>Beállítás aktív konfigurációként (Enter)</value>
+    <value>Beállítás aktív konfigurációként</value>
   </data>
   <data name="menuClearServerStatistics" xml:space="preserve">
     <value>Összes szolgáltatás statisztika törlése</value>
   </data>
   <data name="menuRealPingServer" xml:space="preserve">
-    <value>Konfigurációk valós késleltetésének tesztelése (Ctrl+R)</value>
+    <value>Konfigurációk valós késleltetésének tesztelése</value>
   </data>
   <data name="menuSortServerResult" xml:space="preserve">
     <value>Rendezés teszteredmény szerint</value>
   </data>
   <data name="menuSpeedServer" xml:space="preserve">
-    <value>Konfigurációk letöltési sebességének tesztelése (Ctrl+T)</value>
+    <value>Konfigurációk letöltési sebességének tesztelése</value>
   </data>
   <data name="menuTcpingServer" xml:space="preserve">
-    <value>Konfigurációk tesztelése tcpinggel (Ctrl+O)</value>
+    <value>Konfigurációk tesztelése tcpinggel</value>
   </data>
   <data name="menuExport2ClientConfig" xml:space="preserve">
     <value>Kijelölt konfiguráció exportálása teljes konfigurációként</value>
   </data>
   <data name="menuExport2ShareUrl" xml:space="preserve">
-    <value>Megosztási link exportálása vágólapra (Ctrl+C)</value>
+    <value>Megosztási link exportálása vágólapra</value>
   </data>
   <data name="menuAddCustomServer" xml:space="preserve">
     <value>Egyéni konfiguráció hozzáadása</value>
@@ -529,19 +529,19 @@
     <value>[VMess] konfiguráció hozzáadása</value>
   </data>
   <data name="menuSelectAll" xml:space="preserve">
-    <value>Összes kijelölése (Ctrl+A)</value>
+    <value>Összes kijelölése</value>
   </data>
   <data name="menuMsgViewClear" xml:space="preserve">
     <value>Összes törlése</value>
   </data>
   <data name="menuMsgViewCopy" xml:space="preserve">
-    <value>Másolás (Ctrl+C)</value>
+    <value>Másolás</value>
   </data>
   <data name="menuMsgViewCopyAll" xml:space="preserve">
     <value>Összes másolása</value>
   </data>
   <data name="menuMsgViewSelectAll" xml:space="preserve">
-    <value>Összes kijelölése (Ctrl+A)</value>
+    <value>Összes kijelölése</value>
   </data>
   <data name="menuSubAdd" xml:space="preserve">
     <value>Hozzáadás</value>
@@ -675,8 +675,8 @@
   <data name="TbSettingsCore" xml:space="preserve">
     <value>Core: alapbeállítások</value>
   </data>
-  <data name="TbSettingsCoreDns" xml:space="preserve">
-    <value>V2ray DNS beállítások</value>
+  <data name="TbCustomDnsRay" xml:space="preserve">
+    <value>V2ray Custom DNS</value>
   </data>
   <data name="TbSettingsCoreKcp" xml:space="preserve">
     <value>Core: KCP beállítások</value>
@@ -747,9 +747,6 @@
   <data name="TbSettingsSystemproxy" xml:space="preserve">
     <value>Rendszerproxy beállítások</value>
   </data>
-  <data name="TbSettingsTLS13" xml:space="preserve">
-    <value>Biztonsági protokoll TLS v1.3 engedélyezése (előfizetés/frissítés)</value>
-  </data>
   <data name="TbSettingsTrayMenuServersLimit" xml:space="preserve">
     <value>Tálca jobb egérgombos menü konfigurációk megjelenítési limitje</value>
   </data>
@@ -784,7 +781,7 @@
     <value>PAC mód</value>
   </data>
   <data name="menuShareServer" xml:space="preserve">
-    <value>Konfiguráció megosztása (Ctrl+F)</value>
+    <value>Konfiguráció megosztása</value>
   </data>
   <data name="menuRouting" xml:space="preserve">
     <value>Útválasztás</value>
@@ -796,16 +793,16 @@
     <value>Futtatás rendszergazdaként</value>
   </data>
   <data name="menuMoveBottom" xml:space="preserve">
-    <value>Mozgatás alulra (B)</value>
+    <value>Mozgatás alulra</value>
   </data>
   <data name="menuMoveDown" xml:space="preserve">
-    <value>Le (D)</value>
+    <value>Le</value>
   </data>
   <data name="menuMoveTop" xml:space="preserve">
-    <value>Mozgatás felülre (T)</value>
+    <value>Mozgatás felülre</value>
   </data>
   <data name="menuMoveUp" xml:space="preserve">
-    <value>Fel (U)</value>
+    <value>Fel</value>
   </data>
   <data name="MsgFilterTitle" xml:space="preserve">
     <value>Szűrő, támogatja a reguláris kifejezéseket</value>
@@ -820,10 +817,10 @@
     <value>Szabályok importálása</value>
   </data>
   <data name="menuRoutingAdvancedRemove" xml:space="preserve">
-    <value>Kijelölt eltávolítása (Delete)</value>
+    <value>Kijelölt eltávolítása</value>
   </data>
   <data name="menuRoutingAdvancedSetDefault" xml:space="preserve">
-    <value>Beállítás aktív szabályként (Enter)</value>
+    <value>Beállítás aktív szabályként</value>
   </data>
   <data name="TbdomainStrategy" xml:space="preserve">
     <value>Tartomány stratégia</value>
@@ -856,7 +853,7 @@
     <value>Szabálylista</value>
   </data>
   <data name="menuRuleRemove" xml:space="preserve">
-    <value>Szabály eltávolítása (Delete)</value>
+    <value>Szabály eltávolítása</value>
   </data>
   <data name="menuRoutingRuleDetailsSetting" xml:space="preserve">
     <value>Útválasztási szabály részleteinek beállítása</value>
@@ -892,7 +889,7 @@
     <value>Késleltetés (ms)</value>
   </data>
   <data name="LvTestSpeed" xml:space="preserve">
-    <value>Sebesség (M/s)</value>
+    <value>Sebesség (MB/s)</value>
   </data>
   <data name="FailedToRunCore" xml:space="preserve">
     <value>Nem sikerült futtatni a Core-t, kérjük, ellenőrizze a prompt információt</value>
@@ -925,7 +922,7 @@
     <value>Teszt kihagyása</value>
   </data>
   <data name="menuEditServer" xml:space="preserve">
-    <value>Konfiguráció szerkesztése (Ctrl+D)</value>
+    <value>Konfiguráció szerkesztése</value>
   </data>
   <data name="TbSettingsDoubleClick2Activate" xml:space="preserve">
     <value>Dupla kattintás a konfigurációra aktiválja</value>
@@ -979,7 +976,10 @@
     <value>Hardveres gyorsítás engedélyezése (újraindítást igényel)</value>
   </data>
   <data name="SpeedtestingWait" xml:space="preserve">
-    <value>Tesztelésre vár (ESC megnyomásával megszakítható)...</value>
+    <value>Tesztelésre vár...</value>
+  </data>
+  <data name="SpeedtestingPressEscToExit" xml:space="preserve">
+    <value>ESC megnyomásával megszakítható</value>
   </data>
   <data name="TipDisplayLog" xml:space="preserve">
     <value>Kérjük, kapcsolja ki rendellenes megszakadás esetén</value>
@@ -1011,8 +1011,8 @@
   <data name="menuDNSSetting" xml:space="preserve">
     <value>DNS beállítások</value>
   </data>
-  <data name="TbSettingsCoreDnsSingbox" xml:space="preserve">
-    <value>sing-box DNS beállítások</value>
+  <data name="TbCustomDnsSingbox" xml:space="preserve">
+    <value>sing-box Custom DNS</value>
   </data>
   <data name="TbDnsSingboxObjectDoc" xml:space="preserve">
     <value>Kérjük, töltse ki a DNS struktúrát, kattintson a dokumentum megtekintéséhez</value>
@@ -1207,7 +1207,7 @@
     <value>Proxyk frissítése</value>
   </data>
   <data name="menuProxiesSelectActivity" xml:space="preserve">
-    <value>Aktív csomópont kiválasztása (Enter)</value>
+    <value>Aktív csomópont kiválasztása</value>
   </data>
   <data name="TbSettingsDomainStrategy4Out" xml:space="preserve">
     <value>Alapértelmezett tartomány stratégia kimenő forgalomhoz</value>
@@ -1377,22 +1377,22 @@
   <data name="TbPorts7Tips" xml:space="preserve">
     <value>A portot lefedi, vesszővel (,) elválasztva</value>
   </data>
-  <data name="menuSetDefaultMultipleServer" xml:space="preserve">
-    <value>Több konfiguráció egyéni konfigurációra</value>
+  <data name="menuGenGroupMultipleServer" xml:space="preserve">
+    <value>Generate Policy Group from Multiple Profiles</value>
   </data>
-  <data name="menuSetDefaultMultipleServerXrayRandom" xml:space="preserve">
+  <data name="menuGenGroupMultipleServerXrayRandom" xml:space="preserve">
     <value>Több konfiguráció véletlenszerűen Xray szerint</value>
   </data>
-  <data name="menuSetDefaultMultipleServerXrayRoundRobin" xml:space="preserve">
+  <data name="menuGenGroupMultipleServerXrayRoundRobin" xml:space="preserve">
     <value>Több konfiguráció RoundRobin Xray szerint</value>
   </data>
-  <data name="menuSetDefaultMultipleServerXrayLeastPing" xml:space="preserve">
+  <data name="menuGenGroupMultipleServerXrayLeastPing" xml:space="preserve">
     <value>Több konfiguráció legkisebb pinggel Xray szerint</value>
   </data>
-  <data name="menuSetDefaultMultipleServerXrayLeastLoad" xml:space="preserve">
+  <data name="menuGenGroupMultipleServerXrayLeastLoad" xml:space="preserve">
     <value>Több konfiguráció legkisebb terheléssel Xray szerint</value>
   </data>
-  <data name="menuSetDefaultMultipleServerSingBoxLeastPing" xml:space="preserve">
+  <data name="menuGenGroupMultipleServerSingBoxLeastPing" xml:space="preserve">
     <value>Több konfiguráció legkisebb pinggel sing-box szerint</value>
   </data>
   <data name="menuExportConfig" xml:space="preserve">
@@ -1419,19 +1419,10 @@
   <data name="TbDomesticDNS" xml:space="preserve">
     <value>Domestic DNS</value>
   </data>
-  <data name="TbSBOutboundsResolverDNS" xml:space="preserve">
-    <value>Outbound DNS Resolution (sing-box)</value>
+  <data name="TbRemoteDNSTips" xml:space="preserve">
+    <value>Via proxy — please ensure remote availability</value>
   </data>
-  <data name="TbSBOutboundDomainResolve" xml:space="preserve">
-    <value>Resolve Outbound Domains</value>
-  </data>
-  <data name="TbSBDoHResolverServer" xml:space="preserve">
-    <value>sing-box DoH Resolver Server</value>
-  </data>
-  <data name="TbSBFallbackDNSResolve" xml:space="preserve">
-    <value>Fallback DNS Resolution, Suggest IP</value>
-  </data>
-  <data name="TbXrayFreedomResolveStrategy" xml:space="preserve">
+  <data name="TbXrayFreedomStrategy" xml:space="preserve">
     <value>xray Freedom Resolution Strategy</value>
   </data>
   <data name="TbSBDirectResolveStrategy" xml:space="preserve">
@@ -1442,9 +1433,6 @@
   </data>
   <data name="TbAddCommonDNSHosts" xml:space="preserve">
     <value>Add Common DNS Hosts</value>
-  </data>
-  <data name="TbSBDoHOverride" xml:space="preserve">
-    <value>The sing-box DoH resolution server can be overwritten</value>
   </data>
   <data name="TbFakeIP" xml:space="preserve">
     <value>FakeIP</value>
@@ -1474,7 +1462,7 @@
     <value>Custom DNS Enabled, This Page's Settings Invalid</value>
   </data>
   <data name="TbBlockSVCBHTTPSQueriesTips" xml:space="preserve">
-    <value>Prevent domain-based routing rules from failing</value>
+    <value>Block ECH and HTTP/3 availability checks when enabled</value>
   </data>
   <data name="FillCorrectConfigTemplateText" xml:space="preserve">
     <value>Please fill in the correct config template</value>
@@ -1514,5 +1502,143 @@
   </data>
   <data name="TbFakeIPTips" xml:space="preserve">
     <value>Applies globally by default, with built-in FakeIP filtering (sing-box only).</value>
+  </data>
+  <data name="PleaseAddAtLeastOneServer" xml:space="preserve">
+    <value>Please Add At Least One Configuration</value>
+  </data>
+  <data name="TbConfigTypePolicyGroup" xml:space="preserve">
+    <value>Policy Group</value>
+  </data>
+  <data name="TbConfigTypeProxyChain" xml:space="preserve">
+    <value>Proxy Chain</value>
+  </data>
+  <data name="TbLeastPing" xml:space="preserve">
+    <value>Lowest Latency</value>
+  </data>
+  <data name="TbRandom" xml:space="preserve">
+    <value>Random</value>
+  </data>
+  <data name="TbRoundRobin" xml:space="preserve">
+    <value>Round Robin</value>
+  </data>
+  <data name="TbLeastLoad" xml:space="preserve">
+    <value>Most Stable</value>
+  </data>
+  <data name="TbPolicyGroupType" xml:space="preserve">
+    <value>Policy Group Type</value>
+  </data>
+  <data name="menuAddPolicyGroupServer" xml:space="preserve">
+    <value>Add Policy Group Configuration</value>
+  </data>
+  <data name="menuAddProxyChainServer" xml:space="preserve">
+    <value>Add Proxy Chain Configuration</value>
+  </data>
+  <data name="menuAddChildServer" xml:space="preserve">
+    <value>Add Child Configuration</value>
+  </data>
+  <data name="menuRemoveChildServer" xml:space="preserve">
+    <value>Remove Child Configuration</value>
+  </data>
+  <data name="menuServerList" xml:space="preserve">
+    <value>Configuration item 1, Auto add from subscription group</value>
+  </data>
+  <data name="TbFallback" xml:space="preserve">
+    <value>Fallback</value>
+  </data>
+  <data name="menuGenGroupMultipleServerSingBoxFallback" xml:space="preserve">
+    <value>Multi-Configuration Fallback by sing-box</value>
+  </data>
+  <data name="menuGenGroupMultipleServerXrayFallback" xml:space="preserve">
+    <value>Multi-Configuration Fallback by Xray</value>
+  </data>
+  <data name="CoreNotSupportNetwork" xml:space="preserve">
+    <value>Core '{0}' does not support network type '{1}'.</value>
+  </data>
+  <data name="CoreNotSupportProtocolTransport" xml:space="preserve">
+    <value>Core '{0}' does not support protocol '{1}' when using transport '{2}'.</value>
+  </data>
+  <data name="CoreNotSupportProtocol" xml:space="preserve">
+    <value>Core '{0}' does not support protocol '{1}'.</value>
+  </data>
+  <data name="ProxyChainedPrefix" xml:space="preserve">
+    <value>Proxy chained: </value>
+  </data>
+  <data name="RoutingRuleOutboundPrefix" xml:space="preserve">
+    <value>Routing rule outbound: </value>
+  </data>
+  <data name="PolicyGroupPrefix" xml:space="preserve">
+    <value>Policy group: </value>
+  </data>
+  <data name="NodeTagNotExist" xml:space="preserve">
+    <value>Node alias '{0}' does not exist.</value>
+  </data>
+  <data name="GroupEmpty" xml:space="preserve">
+    <value>Group '{0}' is empty. Please add at least one node.</value>
+  </data>
+  <data name="InvalidProperty" xml:space="preserve">
+    <value>The {0} property is invalid, please check.</value>
+  </data>
+  <data name="GroupSelfReference" xml:space="preserve">
+    <value>{0} Group cannot reference itself or have a circular reference</value>
+  </data>
+  <data name="NotSupportProtocol" xml:space="preserve">
+    <value>Not support protocol '{0}'.</value>
+  </data>
+  <data name="TbSettingsHide2TrayWhenCloseTip" xml:space="preserve">
+    <value>If the system does not have a tray function, please do not enable it</value>
+  </data>
+  <data name="TbRuleTypeTips" xml:space="preserve">
+    <value>You can set separate rules for Routing and DNS, or select "ALL" to apply to both</value>
+  </data>
+  <data name="TbRuleType" xml:space="preserve">
+    <value>Rule Type</value>
+  </data>
+  <data name="TbBootstrapDNS" xml:space="preserve">
+    <value>Bootstrap DNS</value>
+  </data>
+  <data name="TbBootstrapDNSTips" xml:space="preserve">
+    <value>Resolve DNS server domains, requires IP</value>
+  </data>
+  <data name="menuFastRealPing" xml:space="preserve">
+    <value>Test real delay</value>
+  </data>
+  <data name="TbPolicyGroupSubChildTip" xml:space="preserve">
+    <value>Auto add filtered configuration from subscription groups</value>
+  </data>
+  <data name="TbCertPinning" xml:space="preserve">
+    <value>Certificate Pinning</value>
+  </data>
+  <data name="TbCertPinningTips" xml:space="preserve">
+    <value>Server Certificate (PEM format, optional)
+When specified, the certificate will be pinned, and "Allow Insecure" will be disabled.
+
+The "Get Certificate" action may fail if a self-signed certificate is used or if the system contains an untrusted or malicious CA.</value>
+  </data>
+  <data name="TbFetchCert" xml:space="preserve">
+    <value>Fetch Certificate</value>
+  </data>
+  <data name="TbFetchCertChain" xml:space="preserve">
+    <value>Fetch Certificate Chain</value>
+  </data>
+  <data name="ServerNameMustBeValidDomain" xml:space="preserve">
+    <value>Please set a valid domain</value>
+  </data>
+  <data name="CertNotSet" xml:space="preserve">
+    <value>Certificate not set</value>
+  </data>
+  <data name="CertSet" xml:space="preserve">
+    <value>Certificate set</value>
+  </data>
+  <data name="TbSettingsCustomSystemProxyPacPath" xml:space="preserve">
+    <value>Custom PAC file path</value>
+  </data>
+  <data name="TbSettingsCustomSystemProxyScriptPath" xml:space="preserve">
+    <value>Custom system proxy script file path</value>
+  </data>
+  <data name="TbSettingsMacOSShowInDock" xml:space="preserve">
+    <value>macOS displays this in the Dock (requires restart)</value>
+  </data>
+  <data name="menuServerList2" xml:space="preserve">
+    <value>Configuration Item 2, Select and add from self-built</value>
   </data>
 </root>

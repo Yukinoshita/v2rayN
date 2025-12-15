@@ -1,5 +1,3 @@
-using System.Reactive.Disposables;
-using ReactiveUI;
 using v2rayN.ViewModels;
 
 namespace v2rayN.Views;
@@ -15,7 +13,7 @@ public partial class ThemeSettingView
         ViewModel = new ThemeSettingViewModel();
 
         cmbCurrentTheme.ItemsSource = Utils.GetEnumNames<ETheme>().Take(3).ToList();
-        cmbCurrentFontSize.ItemsSource = Enumerable.Range(Global.MinFontSize, 11).ToList();
+        cmbCurrentFontSize.ItemsSource = Enumerable.Range(Global.MinFontSize, Global.MinFontSizeCount).ToList();
         cmbCurrentLanguage.ItemsSource = Global.Languages;
 
         this.WhenActivated(disposables =>

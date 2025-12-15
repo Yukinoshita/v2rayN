@@ -1,9 +1,3 @@
-using System.Reactive.Disposables;
-using Avalonia.Controls;
-using Avalonia.Input;
-using Avalonia.Interactivity;
-using MsBox.Avalonia.Enums;
-using ReactiveUI;
 using v2rayN.Desktop.Base;
 using v2rayN.Desktop.Common;
 
@@ -20,9 +14,9 @@ public partial class RoutingRuleSettingWindow : WindowBase<RoutingRuleSettingVie
     {
         InitializeComponent();
 
-        this.Loaded += Window_Loaded;
-        btnCancel.Click += (s, e) => this.Close();
-        this.KeyDown += RoutingRuleSettingWindow_KeyDown;
+        Loaded += Window_Loaded;
+        btnCancel.Click += (s, e) => Close();
+        KeyDown += RoutingRuleSettingWindow_KeyDown;
         lstRules.SelectionChanged += lstRules_SelectionChanged;
         lstRules.DoubleTapped += LstRules_DoubleTapped;
         menuRuleSelectAll.Click += menuRuleSelectAll_Click;
@@ -70,7 +64,7 @@ public partial class RoutingRuleSettingWindow : WindowBase<RoutingRuleSettingVie
         switch (action)
         {
             case EViewAction.CloseWindow:
-                this.Close(true);
+                Close(true);
                 break;
 
             case EViewAction.ShowYesNo:
@@ -89,7 +83,10 @@ public partial class RoutingRuleSettingWindow : WindowBase<RoutingRuleSettingVie
 
             case EViewAction.RoutingRuleDetailsWindow:
                 if (obj is null)
+                {
                     return false;
+                }
+
                 return await new RoutingRuleDetailsWindow((RulesItem)obj).ShowDialog<bool>(this);
 
             case EViewAction.ImportRulesFromFile:
@@ -143,25 +140,28 @@ public partial class RoutingRuleSettingWindow : WindowBase<RoutingRuleSettingVie
         }
         else
         {
-            if (e.Key == Key.T)
+            switch (e.Key)
             {
-                ViewModel?.MoveRule(EMove.Top);
-            }
-            else if (e.Key == Key.U)
-            {
-                ViewModel?.MoveRule(EMove.Up);
-            }
-            else if (e.Key == Key.D)
-            {
-                ViewModel?.MoveRule(EMove.Down);
-            }
-            else if (e.Key == Key.B)
-            {
-                ViewModel?.MoveRule(EMove.Bottom);
-            }
-            else if (e.Key == Key.Delete)
-            {
-                ViewModel?.RuleRemoveAsync();
+                case Key.T:
+                    ViewModel?.MoveRule(EMove.Top);
+                    break;
+
+                case Key.U:
+                    ViewModel?.MoveRule(EMove.Up);
+                    break;
+
+                case Key.D:
+                    ViewModel?.MoveRule(EMove.Down);
+                    break;
+
+                case Key.B:
+                    ViewModel?.MoveRule(EMove.Bottom);
+                    break;
+
+                case Key.Delete:
+                case Key.Back:
+                    ViewModel?.RuleRemoveAsync();
+                    break;
             }
         }
     }

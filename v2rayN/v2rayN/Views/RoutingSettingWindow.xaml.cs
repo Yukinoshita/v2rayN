@@ -1,8 +1,3 @@
-using System.Reactive.Disposables;
-using System.Windows;
-using System.Windows.Input;
-using ReactiveUI;
-
 namespace v2rayN.Views;
 
 public partial class RoutingSettingWindow
@@ -11,9 +6,9 @@ public partial class RoutingSettingWindow
     {
         InitializeComponent();
 
-        this.Owner = Application.Current.MainWindow;
-        this.Closing += RoutingSettingWindow_Closing;
-        this.PreviewKeyDown += RoutingSettingWindow_PreviewKeyDown;
+        Owner = Application.Current.MainWindow;
+        Closing += RoutingSettingWindow_Closing;
+        PreviewKeyDown += RoutingSettingWindow_PreviewKeyDown;
         lstRoutings.SelectionChanged += lstRoutings_SelectionChanged;
         lstRoutings.MouseDoubleClick += LstRoutings_MouseDoubleClick;
         menuRoutingAdvancedSelectAll.Click += menuRoutingAdvancedSelectAll_Click;
@@ -49,7 +44,7 @@ public partial class RoutingSettingWindow
         switch (action)
         {
             case EViewAction.CloseWindow:
-                this.DialogResult = true;
+                DialogResult = true;
                 break;
 
             case EViewAction.ShowYesNo:
@@ -62,8 +57,11 @@ public partial class RoutingSettingWindow
             case EViewAction.RoutingRuleSettingWindow:
 
                 if (obj is null)
+                {
                     return false;
-                return (new RoutingRuleSettingWindow((RoutingItem)obj)).ShowDialog() ?? false;
+                }
+
+                return new RoutingRuleSettingWindow((RoutingItem)obj).ShowDialog() ?? false;
         }
         return await Task.FromResult(true);
     }
@@ -72,7 +70,7 @@ public partial class RoutingSettingWindow
     {
         if (ViewModel?.IsModified == true)
         {
-            this.DialogResult = true;
+            DialogResult = true;
         }
     }
 
@@ -80,18 +78,27 @@ public partial class RoutingSettingWindow
     {
         if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
         {
-            if (e.Key == Key.A)
+            switch (e.Key)
             {
-                lstRoutings.SelectAll();
+                case Key.A:
+                    lstRoutings.SelectAll();
+                    break;
             }
         }
-        else if (e.Key is Key.Enter or Key.Return)
+        else
         {
-            ViewModel?.RoutingAdvancedSetDefault();
-        }
-        else if (e.Key == Key.Delete)
-        {
-            ViewModel?.RoutingAdvancedRemoveAsync();
+            switch (e.Key)
+            {
+                case Key.Enter:
+                    //case Key.Return:
+                    ViewModel?.RoutingAdvancedSetDefault();
+                    break;
+
+                case Key.Delete:
+                case Key.Back:
+                    ViewModel?.RoutingAdvancedRemoveAsync();
+                    break;
+            }
         }
     }
 
@@ -127,11 +134,11 @@ public partial class RoutingSettingWindow
     {
         if (ViewModel?.IsModified == true)
         {
-            this.DialogResult = true;
+            DialogResult = true;
         }
         else
         {
-            this.Close();
+            Close();
         }
     }
 }
