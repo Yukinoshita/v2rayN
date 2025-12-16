@@ -57,6 +57,9 @@ jobs:
         chmod 755 package-release-zip.sh
         ./package-release-zip.sh $OutputArch $OutputPath64
         ./package-release-zip.sh "windows-64-SelfContained" $OutputPath64Sc
+        7z d v2rayN-${OutputArch}.zip "v2rayN-${OutputArch}/bin/mihomo" "v2rayN-${OutputArch}/bin/sing_box" -r
+        7z d v2rayN-windows-64-SelfContained.zip "v2rayN-windows-64-SelfContained/bin/mihomo" "v2rayN-windows-64-SelfContained/bin/sing_box" -r
+
     
     - name: Upload zip archive to release
       uses: svenstaro/upload-release-action@v2
