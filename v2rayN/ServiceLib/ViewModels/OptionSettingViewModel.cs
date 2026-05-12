@@ -20,10 +20,12 @@ public class OptionSettingViewModel : MyReactiveObject
     [Reactive] public bool defAllowInsecure { get; set; }
     [Reactive] public string defFingerprint { get; set; }
     [Reactive] public string defUserAgent { get; set; }
+    [Reactive] public string sendThrough { get; set; }
+    [Reactive] public string bindInterface { get; set; }
     [Reactive] public string mux4SboxProtocol { get; set; }
     [Reactive] public bool enableCacheFile4Sbox { get; set; }
-    [Reactive] public int hyUpMbps { get; set; }
-    [Reactive] public int hyDownMbps { get; set; }
+    [Reactive] public int? hyUpMbps { get; set; }
+    [Reactive] public int? hyDownMbps { get; set; }
     [Reactive] public bool enableFragment { get; set; }
 
     #endregion Core
@@ -47,7 +49,6 @@ public class OptionSettingViewModel : MyReactiveObject
     [Reactive] public bool KeepOlderDedupl { get; set; }
     [Reactive] public bool DisplayRealTimeSpeed { get; set; }
     [Reactive] public bool EnableAutoAdjustMainLvColWidth { get; set; }
-    [Reactive] public bool EnableUpdateSubOnlyRemarksExist { get; set; }
     [Reactive] public bool AutoHideStartup { get; set; }
     [Reactive] public bool Hide2TrayWhenClose { get; set; }
     [Reactive] public bool MacOSShowInDock { get; set; }
@@ -59,6 +60,7 @@ public class OptionSettingViewModel : MyReactiveObject
     [Reactive] public int SpeedTestTimeout { get; set; }
     [Reactive] public string SpeedTestUrl { get; set; }
     [Reactive] public string SpeedPingTestUrl { get; set; }
+    [Reactive] public string UdpTestTarget { get; set; }
     [Reactive] public int MixedConcurrencyCount { get; set; }
     [Reactive] public bool EnableHWA { get; set; }
     [Reactive] public string SubConvertUrl { get; set; }
@@ -95,8 +97,9 @@ public class OptionSettingViewModel : MyReactiveObject
     [Reactive] public bool TunStrictRoute { get; set; }
     [Reactive] public string TunStack { get; set; }
     [Reactive] public int TunMtu { get; set; }
-    [Reactive] public bool TunEnableExInbound { get; set; }
     [Reactive] public bool TunEnableIPv6Address { get; set; }
+    [Reactive] public string TunIcmpRouting { get; set; }
+    [Reactive] public bool TunEnableLegacyProtect { get; set; }
 
     #endregion Tun mode
 
@@ -108,6 +111,7 @@ public class OptionSettingViewModel : MyReactiveObject
     [Reactive] public string CoreType4 { get; set; }
     [Reactive] public string CoreType5 { get; set; }
     [Reactive] public string CoreType6 { get; set; }
+    [Reactive] public string CoreType7 { get; set; }
     [Reactive] public string CoreType9 { get; set; }
 
     #endregion CoreType
@@ -153,6 +157,8 @@ public class OptionSettingViewModel : MyReactiveObject
         defAllowInsecure = _config.CoreBasicItem.DefAllowInsecure;
         defFingerprint = _config.CoreBasicItem.DefFingerprint;
         defUserAgent = _config.CoreBasicItem.DefUserAgent;
+        sendThrough = _config.CoreBasicItem.SendThrough ?? string.Empty;
+        bindInterface = _config.CoreBasicItem.BindInterface ?? string.Empty;
         mux4SboxProtocol = _config.Mux4SboxItem.Protocol;
         enableCacheFile4Sbox = _config.CoreBasicItem.EnableCacheFile4Sbox;
         hyUpMbps = _config.HysteriaItem.UpMbps;
@@ -180,7 +186,6 @@ public class OptionSettingViewModel : MyReactiveObject
         DisplayRealTimeSpeed = _config.GuiItem.DisplayRealTimeSpeed;
         KeepOlderDedupl = _config.GuiItem.KeepOlderDedupl;
         EnableAutoAdjustMainLvColWidth = _config.UiItem.EnableAutoAdjustMainLvColWidth;
-        EnableUpdateSubOnlyRemarksExist = _config.UiItem.EnableUpdateSubOnlyRemarksExist;
         AutoHideStartup = _config.UiItem.AutoHideStartup;
         Hide2TrayWhenClose = _config.UiItem.Hide2TrayWhenClose;
         MacOSShowInDock = _config.UiItem.MacOSShowInDock;
@@ -193,6 +198,7 @@ public class OptionSettingViewModel : MyReactiveObject
         SpeedTestUrl = _config.SpeedTestItem.SpeedTestUrl;
         MixedConcurrencyCount = _config.SpeedTestItem.MixedConcurrencyCount;
         SpeedPingTestUrl = _config.SpeedTestItem.SpeedPingTestUrl;
+        UdpTestTarget = _config.SpeedTestItem.UdpTestTarget;
         EnableHWA = _config.GuiItem.EnableHWA;
         SubConvertUrl = _config.ConstItem.SubConvertUrl;
         MainGirdOrientation = (int)_config.UiItem.MainGirdOrientation;
@@ -219,8 +225,9 @@ public class OptionSettingViewModel : MyReactiveObject
         TunStrictRoute = _config.TunModeItem.StrictRoute;
         TunStack = _config.TunModeItem.Stack;
         TunMtu = _config.TunModeItem.Mtu;
-        TunEnableExInbound = _config.TunModeItem.EnableExInbound;
         TunEnableIPv6Address = _config.TunModeItem.EnableIPv6Address;
+        TunIcmpRouting = _config.TunModeItem.IcmpRouting;
+        TunEnableLegacyProtect = _config.TunModeItem.EnableLegacyProtect;
 
         #endregion Tun mode
 
@@ -276,6 +283,10 @@ public class OptionSettingViewModel : MyReactiveObject
                     CoreType6 = type;
                     break;
 
+                case 7:
+                    CoreType7 = type;
+                    break;
+
                 case 9:
                     CoreType9 = type;
                     break;
@@ -290,6 +301,12 @@ public class OptionSettingViewModel : MyReactiveObject
            || localPort <= 0 || localPort >= Global.MaxPort)
         {
             NoticeManager.Instance.Enqueue(ResUI.FillLocalListeningPort);
+            return;
+        }
+        var sendThroughValue = sendThrough.TrimEx();
+        if (sendThroughValue.IsNotEmpty() && !Utils.IsIpv4(sendThroughValue))
+        {
+            NoticeManager.Instance.Enqueue(ResUI.FillCorrectSendThroughIPv4);
             return;
         }
         var needReboot = EnableStatistics != _config.GuiItem.EnableStatistics
@@ -331,10 +348,12 @@ public class OptionSettingViewModel : MyReactiveObject
         _config.CoreBasicItem.DefAllowInsecure = defAllowInsecure;
         _config.CoreBasicItem.DefFingerprint = defFingerprint;
         _config.CoreBasicItem.DefUserAgent = defUserAgent;
+        _config.CoreBasicItem.SendThrough = sendThrough.TrimEx();
+        _config.CoreBasicItem.BindInterface = bindInterface.TrimEx();
         _config.Mux4SboxItem.Protocol = mux4SboxProtocol;
         _config.CoreBasicItem.EnableCacheFile4Sbox = enableCacheFile4Sbox;
-        _config.HysteriaItem.UpMbps = hyUpMbps;
-        _config.HysteriaItem.DownMbps = hyDownMbps;
+        _config.HysteriaItem.UpMbps = hyUpMbps ?? 0;
+        _config.HysteriaItem.DownMbps = hyDownMbps ?? 0;
         _config.CoreBasicItem.EnableFragment = enableFragment;
 
         _config.GuiItem.AutoRun = AutoRun;
@@ -342,7 +361,6 @@ public class OptionSettingViewModel : MyReactiveObject
         _config.GuiItem.DisplayRealTimeSpeed = DisplayRealTimeSpeed;
         _config.GuiItem.KeepOlderDedupl = KeepOlderDedupl;
         _config.UiItem.EnableAutoAdjustMainLvColWidth = EnableAutoAdjustMainLvColWidth;
-        _config.UiItem.EnableUpdateSubOnlyRemarksExist = EnableUpdateSubOnlyRemarksExist;
         _config.UiItem.AutoHideStartup = AutoHideStartup;
         _config.UiItem.Hide2TrayWhenClose = Hide2TrayWhenClose;
         _config.UiItem.MacOSShowInDock = MacOSShowInDock;
@@ -355,6 +373,7 @@ public class OptionSettingViewModel : MyReactiveObject
         _config.SpeedTestItem.MixedConcurrencyCount = MixedConcurrencyCount;
         _config.SpeedTestItem.SpeedTestUrl = SpeedTestUrl;
         _config.SpeedTestItem.SpeedPingTestUrl = SpeedPingTestUrl;
+        _config.SpeedTestItem.UdpTestTarget = UdpTestTarget;
         _config.GuiItem.EnableHWA = EnableHWA;
         _config.ConstItem.SubConvertUrl = SubConvertUrl;
         _config.UiItem.MainGirdOrientation = (EGirdOrientation)MainGirdOrientation;
@@ -375,8 +394,9 @@ public class OptionSettingViewModel : MyReactiveObject
         _config.TunModeItem.StrictRoute = TunStrictRoute;
         _config.TunModeItem.Stack = TunStack;
         _config.TunModeItem.Mtu = TunMtu;
-        _config.TunModeItem.EnableExInbound = TunEnableExInbound;
         _config.TunModeItem.EnableIPv6Address = TunEnableIPv6Address;
+        _config.TunModeItem.IcmpRouting = TunIcmpRouting;
+        _config.TunModeItem.EnableLegacyProtect = TunEnableLegacyProtect;
 
         //coreType
         await SaveCoreType();
@@ -425,6 +445,10 @@ public class OptionSettingViewModel : MyReactiveObject
 
                 case 6:
                     type = CoreType6;
+                    break;
+
+                case 7:
+                    type = CoreType7;
                     break;
 
                 case 9:

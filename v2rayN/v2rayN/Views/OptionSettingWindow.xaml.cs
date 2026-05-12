@@ -31,6 +31,7 @@ public partial class OptionSettingWindow
         cmbmux4SboxProtocol.ItemsSource = Global.SingboxMuxs;
         cmbMtu.ItemsSource = Global.TunMtus;
         cmbStack.ItemsSource = Global.TunStacks;
+        cmbIcmpRoutingPolicy.ItemsSource = Global.TunIcmpRoutingPolicies;
 
         cmbCoreType1.ItemsSource = Global.CoreTypes;
         cmbCoreType2.ItemsSource = Global.CoreTypes;
@@ -38,12 +39,14 @@ public partial class OptionSettingWindow
         cmbCoreType4.ItemsSource = Global.CoreTypes;
         cmbCoreType5.ItemsSource = Global.CoreTypes;
         cmbCoreType6.ItemsSource = Global.CoreTypes;
+        cmbCoreType7.ItemsSource = Global.CoreTypes;
         cmbCoreType9.ItemsSource = Global.CoreTypes;
 
         cmbMixedConcurrencyCount.ItemsSource = Enumerable.Range(2, 7).ToList();
         cmbSpeedTestTimeout.ItemsSource = Enumerable.Range(2, 5).Select(i => i * 5).ToList();
         cmbSpeedTestUrl.ItemsSource = Global.SpeedTestUrls;
         cmbSpeedPingTestUrl.ItemsSource = Global.SpeedPingTestUrls;
+        cmbUdpTestTarget.ItemsSource = Global.UdpTestTargets;
         cmbSubConvertUrl.ItemsSource = Global.SubConvertUrls;
         cmbGetFilesSourceUrl.ItemsSource = Global.GeoFilesSources;
         cmbSrsFilesSourceUrl.ItemsSource = Global.SingboxRulesetSources;
@@ -71,6 +74,8 @@ public partial class OptionSettingWindow
             this.Bind(ViewModel, vm => vm.defAllowInsecure, v => v.togdefAllowInsecure.IsChecked).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.defFingerprint, v => v.cmbdefFingerprint.Text).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.defUserAgent, v => v.cmbdefUserAgent.Text).DisposeWith(disposables);
+            this.Bind(ViewModel, vm => vm.sendThrough, v => v.txtsendThrough.Text).DisposeWith(disposables);
+            this.Bind(ViewModel, vm => vm.bindInterface, v => v.txtbindInterface.Text).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.mux4SboxProtocol, v => v.cmbmux4SboxProtocol.Text).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.enableCacheFile4Sbox, v => v.togenableCacheFile4Sbox.IsChecked).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.hyUpMbps, v => v.txtUpMbps.Text).DisposeWith(disposables);
@@ -90,7 +95,6 @@ public partial class OptionSettingWindow
             this.Bind(ViewModel, vm => vm.DisplayRealTimeSpeed, v => v.togDisplayRealTimeSpeed.IsChecked).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.KeepOlderDedupl, v => v.togKeepOlderDedupl.IsChecked).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.EnableAutoAdjustMainLvColWidth, v => v.togEnableAutoAdjustMainLvColWidth.IsChecked).DisposeWith(disposables);
-            this.Bind(ViewModel, vm => vm.EnableUpdateSubOnlyRemarksExist, v => v.togEnableUpdateSubOnlyRemarksExist.IsChecked).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.AutoHideStartup, v => v.togAutoHideStartup.IsChecked).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.EnableDragDropSort, v => v.togEnableDragDropSort.IsChecked).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.DoubleClick2Activate, v => v.togDoubleClick2Activate.IsChecked).DisposeWith(disposables);
@@ -100,6 +104,7 @@ public partial class OptionSettingWindow
             this.Bind(ViewModel, vm => vm.SpeedTestTimeout, v => v.cmbSpeedTestTimeout.Text).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.SpeedTestUrl, v => v.cmbSpeedTestUrl.Text).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.SpeedPingTestUrl, v => v.cmbSpeedPingTestUrl.Text).DisposeWith(disposables);
+            this.Bind(ViewModel, vm => vm.UdpTestTarget, v => v.cmbUdpTestTarget.Text).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.MixedConcurrencyCount, v => v.cmbMixedConcurrencyCount.Text).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.EnableHWA, v => v.togEnableHWA.IsChecked).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.SubConvertUrl, v => v.cmbSubConvertUrl.Text).DisposeWith(disposables);
@@ -118,8 +123,9 @@ public partial class OptionSettingWindow
             this.Bind(ViewModel, vm => vm.TunStrictRoute, v => v.togStrictRoute.IsChecked).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.TunStack, v => v.cmbStack.Text).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.TunMtu, v => v.cmbMtu.Text).DisposeWith(disposables);
-            this.Bind(ViewModel, vm => vm.TunEnableExInbound, v => v.togEnableExInbound.IsChecked).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.TunEnableIPv6Address, v => v.togEnableIPv6Address.IsChecked).DisposeWith(disposables);
+            this.Bind(ViewModel, vm => vm.TunIcmpRouting, v => v.cmbIcmpRoutingPolicy.Text).DisposeWith(disposables);
+            this.Bind(ViewModel, vm => vm.TunEnableLegacyProtect, v => v.togEnableLegacyProtect.IsChecked).DisposeWith(disposables);
 
             this.Bind(ViewModel, vm => vm.CoreType1, v => v.cmbCoreType1.Text).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.CoreType2, v => v.cmbCoreType2.Text).DisposeWith(disposables);
@@ -127,6 +133,7 @@ public partial class OptionSettingWindow
             this.Bind(ViewModel, vm => vm.CoreType4, v => v.cmbCoreType4.Text).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.CoreType5, v => v.cmbCoreType5.Text).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.CoreType6, v => v.cmbCoreType6.Text).DisposeWith(disposables);
+            this.Bind(ViewModel, vm => vm.CoreType7, v => v.cmbCoreType7.Text).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.CoreType9, v => v.cmbCoreType9.Text).DisposeWith(disposables);
 
             this.BindCommand(ViewModel, vm => vm.SaveCmd, v => v.btnSave).DisposeWith(disposables);

@@ -197,12 +197,13 @@ public class CertPemManager
         "D02A0F994A868C66395F2E7A880DF509BD0C29C96DE16015A0FD501EDA4F96A9", // OISTE Client Root RSA G1
         "EEC997C0C30F216F7E3B8B307D2BAE42412D753FC8219DAFD1520B2572850F49", // OISTE Server Root ECC G1
         "9AE36232A5189FFDDB353DFD26520C015395D22777DAC59DB57B98C089A651E6", // OISTE Server Root RSA G1
+        "B49141502D00663D740F2E7EC340C52800962666121A36D09CF7DD2B90384FB4", // e-Szigno TLS Root CA 2023
     };
 
     /// <summary>
     /// Get certificate in PEM format from a server with CA pinning validation
     /// </summary>
-    public async Task<(string?, string?)> GetCertPemAsync(string target, string serverName, int timeout = 4)
+    public async Task<(string?, string?)> GetCertPemAsync(string target, string serverName, int timeout = 4, bool allowInsecure = false)
     {
         try
         {
@@ -214,12 +215,14 @@ public class CertPemManager
             using var client = new TcpClient();
             await client.ConnectAsync(domain, port > 0 ? port : 443, cts.Token);
 
-            using var ssl = new SslStream(client.GetStream(), false, ValidateServerCertificate);
+            var callback = new RemoteCertificateValidationCallback((sender, certificate, chain, sslPolicyErrors) =>
+                ValidateServerCertificate(sender, certificate, chain, sslPolicyErrors, allowInsecure));
+            await using var ssl = new SslStream(client.GetStream(), false, callback);
 
             var sslOptions = new SslClientAuthenticationOptions
             {
                 TargetHost = serverName,
-                RemoteCertificateValidationCallback = ValidateServerCertificate
+                RemoteCertificateValidationCallback = callback
             };
 
             await ssl.AuthenticateAsClientAsync(sslOptions, cts.Token);
@@ -248,7 +251,7 @@ public class CertPemManager
     /// <summary>
     /// Get certificate chain in PEM format from a server with CA pinning validation
     /// </summary>
-    public async Task<(List<string>, string?)> GetCertChainPemAsync(string target, string serverName, int timeout = 4)
+    public async Task<(List<string>, string?)> GetCertChainPemAsync(string target, string serverName, int timeout = 4, bool allowInsecure = false)
     {
         var pemList = new List<string>();
         try
@@ -261,12 +264,14 @@ public class CertPemManager
             using var client = new TcpClient();
             await client.ConnectAsync(domain, port > 0 ? port : 443, cts.Token);
 
-            using var ssl = new SslStream(client.GetStream(), false, ValidateServerCertificate);
+            var callback = new RemoteCertificateValidationCallback((sender, certificate, chain, sslPolicyErrors) =>
+                ValidateServerCertificate(sender, certificate, chain, sslPolicyErrors, allowInsecure));
+            await using var ssl = new SslStream(client.GetStream(), false, callback);
 
             var sslOptions = new SslClientAuthenticationOptions
             {
                 TargetHost = serverName,
-                RemoteCertificateValidationCallback = ValidateServerCertificate
+                RemoteCertificateValidationCallback = callback
             };
 
             await ssl.AuthenticateAsClientAsync(sslOptions, cts.Token);
@@ -279,11 +284,7 @@ public class CertPemManager
             var chain = new X509Chain();
             chain.Build(certChain);
 
-            foreach (var element in chain.ChainElements)
-            {
-                var pem = ExportCertToPem(element.Certificate);
-                pemList.Add(pem);
-            }
+            pemList.AddRange(chain.ChainElements.Select(element => ExportCertToPem(element.Certificate)));
 
             return (pemList, null);
         }
@@ -303,14 +304,21 @@ public class CertPemManager
     /// Validate server certificate with CA pinning
     /// </summary>
     private bool ValidateServerCertificate(
-        object sender,
+        object _,
         X509Certificate? certificate,
         X509Chain? chain,
-        SslPolicyErrors sslPolicyErrors)
+        SslPolicyErrors sslPolicyErrors,
+        bool allowInsecure)
     {
         if (certificate == null)
         {
             return false;
+        }
+
+        // In insecure mode, accept any certificate so self-signed certs can be fetched.
+        if (allowInsecure)
+        {
+            return true;
         }
 
         // Check certificate name mismatch
@@ -415,5 +423,23 @@ public class CertPemManager
         }
 
         return string.Concat(pemList);
+    }
+
+    public static string GetCertSha256Thumbprint(string pemCert, bool includeColon = false)
+    {
+        try
+        {
+            var cert = X509Certificate2.CreateFromPem(pemCert);
+            var thumbprint = cert.GetCertHashString(HashAlgorithmName.SHA256);
+            if (includeColon)
+            {
+                return string.Join(":", thumbprint.Chunk(2).Select(c => new string(c)));
+            }
+            return thumbprint;
+        }
+        catch
+        {
+            return string.Empty;
+        }
     }
 }

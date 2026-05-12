@@ -1,6 +1,6 @@
 using System.Reactive.Concurrency;
-using static ServiceLib.Models.ClashProviders;
-using static ServiceLib.Models.ClashProxies;
+using static ServiceLib.Models.Dto.ClashProviders;
+using static ServiceLib.Models.Dto.ClashProxies;
 
 namespace ServiceLib.ViewModels;
 
@@ -90,7 +90,7 @@ public class ClashProxiesViewModel : MyReactiveObject
 
         AppEvents.ProxiesReloadRequested
             .AsObservable()
-            .ObserveOn(RxApp.MainThreadScheduler)
+            .ObserveOn(RxSchedulers.MainThreadScheduler)
             .Subscribe(async _ => await ProxiesReload());
 
         #endregion AppEvents
@@ -173,7 +173,7 @@ public class ClashProxiesViewModel : MyReactiveObject
 
         if (refreshUI)
         {
-            RxApp.MainThreadScheduler.Schedule(() => _ = RefreshProxyGroups());
+            RxSchedulers.MainThreadScheduler.Schedule(() => _ = RefreshProxyGroups());
         }
     }
 
@@ -387,7 +387,7 @@ public class ClashProxiesViewModel : MyReactiveObject
             }
 
             var model = new SpeedTestResult() { IndexId = item.Name, Delay = result };
-            RxApp.MainThreadScheduler.Schedule(model, (scheduler, model) =>
+            RxSchedulers.MainThreadScheduler.Schedule(model, (scheduler, model) =>
             {
                 _ = ProxiesDelayTestResult(model);
                 return Disposable.Empty;
@@ -437,7 +437,7 @@ public class ClashProxiesViewModel : MyReactiveObject
               {
                   await Task.Delay(1000 * 60);
                   numOfExecuted++;
-                  if (!(AutoRefresh && _config.UiItem.ShowInTaskbar && _config.IsRunningCore(ECoreType.sing_box)))
+                  if (!(AutoRefresh && AppManager.Instance.ShowInTaskbar && AppManager.Instance.IsRunningCore(ECoreType.sing_box)))
                   {
                       continue;
                   }

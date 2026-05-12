@@ -72,6 +72,7 @@ public partial class MainWindow : WindowBase<MainWindowViewModel>
             this.BindCommand(ViewModel, vm => vm.AddTuicServerCmd, v => v.menuAddTuicServer).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.AddWireguardServerCmd, v => v.menuAddWireguardServer).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.AddAnytlsServerCmd, v => v.menuAddAnytlsServer).DisposeWith(disposables);
+            this.BindCommand(ViewModel, vm => vm.AddNaiveServerCmd, v => v.menuAddNaiveServer).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.AddCustomServerCmd, v => v.menuAddCustomServer).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.AddPolicyGroupServerCmd, v => v.menuAddPolicyGroupServer).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.AddProxyChainServerCmd, v => v.menuAddProxyChainServer).DisposeWith(disposables);
@@ -128,25 +129,25 @@ public partial class MainWindow : WindowBase<MainWindowViewModel>
 
             AppEvents.SendSnackMsgRequested
               .AsObservable()
-              .ObserveOn(RxApp.MainThreadScheduler)
+              .ObserveOn(RxSchedulers.MainThreadScheduler)
               .Subscribe(async content => await DelegateSnackMsg(content))
               .DisposeWith(disposables);
 
             AppEvents.AppExitRequested
               .AsObservable()
-              .ObserveOn(RxApp.MainThreadScheduler)
+              .ObserveOn(RxSchedulers.MainThreadScheduler)
               .Subscribe(_ => StorageUI())
               .DisposeWith(disposables);
 
             AppEvents.ShutdownRequested
               .AsObservable()
-              .ObserveOn(RxApp.MainThreadScheduler)
+              .ObserveOn(RxSchedulers.MainThreadScheduler)
               .Subscribe(content => Shutdown(content))
               .DisposeWith(disposables);
 
             AppEvents.ShowHideWindowRequested
              .AsObservable()
-             .ObserveOn(RxApp.MainThreadScheduler)
+             .ObserveOn(RxSchedulers.MainThreadScheduler)
              .Subscribe(blShow => ShowHideWindow(blShow))
              .DisposeWith(disposables);
         });
@@ -161,8 +162,8 @@ public partial class MainWindow : WindowBase<MainWindowViewModel>
         else
         {
             Title = $"{Utils.GetVersion()}";
+            menuAddServerViaScan.IsVisible = false;
         }
-        menuAddServerViaScan.IsVisible = false;
 
         if (_config.UiItem.AutoHideStartup && Utils.IsWindows())
         {
@@ -335,17 +336,17 @@ public partial class MainWindow : WindowBase<MainWindowViewModel>
 
     public async Task ScanScreenTaskAsync()
     {
-        //ShowHideWindow(false);
+        ShowHideWindow(false);
 
-        NoticeManager.Instance.SendMessageAndEnqueue("Not yet implemented.(还未实现)");
-        await Task.CompletedTask;
-        //if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-        //{
-        //    //var bytes = QRCodeHelper.CaptureScreen(desktop);
-        //    //await ViewModel?.ScanScreenResult(bytes);
-        //}
+        await Task.Delay(200);
 
-        //ShowHideWindow(true);
+        var bytes = QRCodeAvaloniaUtils.CaptureScreen();
+        if (bytes != null && ViewModel != null)
+        {
+            await ViewModel.ScanScreenResult(bytes);
+        }
+
+        ShowHideWindow(true);
     }
 
     private async Task ScanImageTaskAsync()
@@ -409,8 +410,8 @@ public partial class MainWindow : WindowBase<MainWindowViewModel>
     {
         var bl = blShow ??
                     (Utils.IsLinux()
-                    ? (!_config.UiItem.ShowInTaskbar ^ (WindowState == WindowState.Minimized))
-                    : !_config.UiItem.ShowInTaskbar);
+                    ? (!AppManager.Instance.ShowInTaskbar ^ (WindowState == WindowState.Minimized))
+                    : !AppManager.Instance.ShowInTaskbar);
         if (bl)
         {
             Show();
@@ -436,7 +437,7 @@ public partial class MainWindow : WindowBase<MainWindowViewModel>
             Hide();
         }
 
-        _config.UiItem.ShowInTaskbar = bl;
+        AppManager.Instance.ShowInTaskbar = bl;
     }
 
     protected override void OnLoaded(object? sender, RoutedEventArgs e)

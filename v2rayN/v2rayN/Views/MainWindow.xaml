@@ -13,7 +13,7 @@
     Title="v2rayN"
     Width="1200"
     Height="800"
-    MinWidth="900"
+    MinWidth="800"
     x:TypeArguments="vms:MainWindowViewModel"
     Icon="/Resources/v2rayN.ico"
     ResizeMode="CanResizeWithGrip"
@@ -100,6 +100,10 @@
                                     Height="{StaticResource MenuItemHeight}"
                                     Header="{x:Static resx:ResUI.menuAddTrojanServer}" />
                                 <MenuItem
+                                    x:Name="menuAddHysteria2Server"
+                                    Height="{StaticResource MenuItemHeight}"
+                                    Header="{x:Static resx:ResUI.menuAddHysteria2Server}" />
+                                <MenuItem
                                     x:Name="menuAddWireguardServer"
                                     Height="{StaticResource MenuItemHeight}"
                                     Header="{x:Static resx:ResUI.menuAddWireguardServer}" />
@@ -113,10 +117,6 @@
                                     Header="{x:Static resx:ResUI.menuAddHttpServer}" />
                                 <Separator Margin="-40,5" />
                                 <MenuItem
-                                    x:Name="menuAddHysteria2Server"
-                                    Height="{StaticResource MenuItemHeight}"
-                                    Header="{x:Static resx:ResUI.menuAddHysteria2Server}" />
-                                <MenuItem
                                     x:Name="menuAddTuicServer"
                                     Height="{StaticResource MenuItemHeight}"
                                     Header="{x:Static resx:ResUI.menuAddTuicServer}" />
@@ -124,6 +124,10 @@
                                     x:Name="menuAddAnytlsServer"
                                     Height="{StaticResource MenuItemHeight}"
                                     Header="{x:Static resx:ResUI.menuAddAnytlsServer}" />
+                                <MenuItem
+                                    x:Name="menuAddNaiveServer"
+                                    Height="{StaticResource MenuItemHeight}"
+                                    Header="{x:Static resx:ResUI.menuAddNaiveServer}" />
                             </MenuItem>
                         </Menu>
                         <Separator />
