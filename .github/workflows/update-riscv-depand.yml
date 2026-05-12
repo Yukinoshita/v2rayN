@@ -2,9 +2,6 @@ name: update riscv dependent versions
 
 on:
   workflow_dispatch:
-  push:
-    branches: 
-      - master
 
 permissions:
   contents: write
